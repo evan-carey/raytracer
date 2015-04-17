@@ -12,6 +12,8 @@
 #include "Lambert.h"
 #include "MiroWindow.h"
 
+#include "assignment1.h"
+
 /* Render a Lorenz attractor */
 void makeLorenzScene() {
 	g_camera = new Camera();
@@ -120,9 +122,8 @@ void makeSpiralScene() {
     g_scene->preCalc();
 }
 
-
-void
-makeBunnyScene()
+/*
+void makeBunnyScene()
 {
     g_camera = new Camera;
     g_scene = new Scene;
@@ -147,7 +148,7 @@ makeBunnyScene()
     Material* mat = new Lambert(Vector3(1.0f));
 
     TriangleMesh * bunny = new TriangleMesh;
-    bunny->load("bunny.obj");
+    bunny->load("res/models/bunny.obj");
     
     // create all the triangles in the bunny mesh and add to the scene
     for (int i = 0; i < bunny->numTris(); ++i)
@@ -178,14 +179,14 @@ makeBunnyScene()
     // let objects do pre-calculations if needed
     g_scene->preCalc();
 }
-
+*/
 
 int
 main(int argc, char*argv[])
 {
     // create a scene
     //makeSpiralScene();
-	makeLorenzScene();
+	makeBunnyScene();
 
     MiroWindow miro(&argc, argv);
     miro.mainLoop();

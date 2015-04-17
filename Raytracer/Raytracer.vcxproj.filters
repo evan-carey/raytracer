@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\models">
-      <UniqueIdentifier>{08bdbd66-d12f-4e43-9978-dc6da099bb12}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BLPatch.cpp">
@@ -146,25 +143,5 @@
     <ClInclude Include="PFMLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="res\models\teapot.obj">
-      <Filter>Resource Files\models</Filter>
-    </Object>
-    <Object Include="res\models\bunny.obj">
-      <Filter>Resource Files\models</Filter>
-    </Object>
-    <Object Include="res\models\bunny_smooth.obj">
-      <Filter>Resource Files\models</Filter>
-    </Object>
-    <Object Include="res\models\cornell_box.obj">
-      <Filter>Resource Files\models</Filter>
-    </Object>
-    <Object Include="res\models\sphere.obj">
-      <Filter>Resource Files\models</Filter>
-    </Object>
-    <Object Include="res\models\sponza.obj">
-      <Filter>Resource Files\models</Filter>
-    </Object>
   </ItemGroup>
 </Project>

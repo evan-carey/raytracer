@@ -162,14 +162,6 @@
     <ClInclude Include="Vector4.h" />
     <ClInclude Include="Worley.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="res\models\bunny.obj" />
-    <Object Include="res\models\bunny_smooth.obj" />
-    <Object Include="res\models\cornell_box.obj" />
-    <Object Include="res\models\sphere.obj" />
-    <Object Include="res\models\sponza.obj" />
-    <Object Include="res\models\teapot.obj" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
