@@ -17,7 +17,7 @@ makeBunnyScene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(512, 512);
+	g_image->resize(128, 128);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
@@ -36,7 +36,7 @@ makeBunnyScene() {
 	Material* mat = new Lambert(Vector3(1.0f));
 
 	TriangleMesh * bunny = new TriangleMesh;
-	bunny->load("bunny.obj");
+	bunny->load("res/models/bunny.obj");
 
 	// create all the triangles in the bunny mesh and add to the scene
 	for (int i = 0; i < bunny->numTris(); ++i) {
