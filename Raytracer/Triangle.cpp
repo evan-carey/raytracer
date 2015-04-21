@@ -55,10 +55,16 @@ Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax)
 	// Compute barycentric coordinates
 	Vector3 vAQ = q - v0;
 
-	float D = dot(vAB, vAB) * dot(vAC, vAC) - dot(vAB, vAC) * dot(vAB, vAC);
+	float dAB_AB = dot(vAB, vAB);
+	float dAB_AC = dot(vAB, vAC);
+	float dAC_AC = dot(vAC, vAC);
+	float dAQ_AB = dot(vAQ, vAB);
+	float dAQ_AC = dot(vAQ, vAC);
 
-	float beta = (dot(vAC, vAC) * dot(vAQ, vAB) - dot(vAB, vAC) * dot(vAQ, vAC)) / D;
-	float gamma = (dot(vAB, vAB) * dot(vAQ, vAC) - dot(vAB, vAC) * dot(vAQ, vAB)) / D;
+	float D = dAB_AB * dAC_AC - dAB_AC * dAB_AC;
+
+	float beta = (dAC_AC * dAQ_AB - dAB_AC * dAQ_AC) / D;
+	float gamma = (dAB_AB * dAQ_AC - dAB_AC * dAQ_AB) / D;
 
 	// If it misses, return false
 	if (beta < 0.0f || gamma < 0.0f) return false;
