@@ -36,7 +36,7 @@ makeBunnyScene() {
 	Material* mat = new Lambert(Vector3(1.0f));
 
 	TriangleMesh * bunny = new TriangleMesh;
-	bunny->load("res/models/bunny.obj");
+	bunny->load("res/models/teapot.obj");
 
 	// create all the triangles in the bunny mesh and add to the scene
 	for (int i = 0; i < bunny->numTris(); ++i) {

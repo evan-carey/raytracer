@@ -42,7 +42,13 @@ Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax)
 	const Vector3 & v1 = m_mesh->vertices()[ti3.y]; //vertex b of triangle
 	const Vector3 & v2 = m_mesh->vertices()[ti3.z]; //vertex c of triangle
 
-	// Get normal
+	// Get normals from mesh
+	TriangleMesh::TupleI3 ti3_norm = m_mesh->nIndices()[m_index];
+	const Vector3& n0 = m_mesh->normals()[ti3_norm.x]; // normal of vertex a
+	const Vector3& n1 = m_mesh->normals()[ti3_norm.y]; // normal of vertex b
+	const Vector3& n2 = m_mesh->normals()[ti3_norm.z]; // normal of vertex c
+
+	// Get triangle normal
 	Vector3 vAB = v1 - v0;
 	Vector3 vAC = v2 - v0;
 	Vector3 norm = cross(vAB, vAC).normalized();
@@ -61,19 +67,22 @@ Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax)
 	float dAQ_AB = dot(vAQ, vAB);
 	float dAQ_AC = dot(vAQ, vAC);
 
-	float D = dAB_AB * dAC_AC - dAB_AC * dAB_AC;
+	float D = dAB_AB * dAC_AC - dAB_AC * dAB_AC; // determinant
 
 	float beta = (dAC_AC * dAQ_AB - dAB_AC * dAQ_AC) / D;
 	float gamma = (dAB_AB * dAQ_AC - dAB_AC * dAQ_AB) / D;
 
 	// If it misses, return false
 	if (beta < 0.0f || gamma < 0.0f) return false;
+	if (beta > 1.0f || gamma > 1.0f) return false;
 	if (beta + gamma > 1.0f) return false;
 	if (result.t < tMin || result.t > tMax) return false;
 
 	// It's a hit, so update result and return true
 	result.P = q;
-	result.N = norm;
+	// interpolate normal
+	float alpha = 1.0f - beta - gamma;
+	result.N = ((n0 * alpha) + (n1 * beta) + (n2 * gamma)).normalized();
 	result.material = this->m_material;
 
 	return true;
