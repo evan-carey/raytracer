@@ -4,6 +4,8 @@
 #include "Image.h"
 #include "Console.h"
 
+#define NUM_TRACE_CALLS 3
+
 Scene * g_scene = 0;
 
 void
@@ -52,9 +54,10 @@ Scene::raytraceImage(Camera *cam, Image *img)
         for (int i = 0; i < img->width(); ++i)
         {
             ray = cam->eyeRay(i, j, img->width(), img->height());
-            if (trace(hitInfo, ray))
+            //if (trace(hitInfo, ray))
+			if (trace(ray, 0, shadeResult))
             {
-                shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
+                //shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
                 img->setPixel(i, j, shadeResult);
             }
         }
@@ -72,4 +75,24 @@ bool
 Scene::trace(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const
 {
     return m_bvh.intersect(minHit, ray, tMin, tMax);
+}
+
+bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
+	HitInfo hit;
+	if (numCalls < NUM_TRACE_CALLS && trace(hit, ray)) {
+		res = hit.material->shade(ray, hit, *this);
+		numCalls++;
+
+		// check reflection
+		if (hit.material->isSpecular()) {
+			Ray reflection = ray.reflect(hit);
+			Vector3 reflectionRes;
+			// recurse on reflection ray
+			if (trace(reflection, numCalls, reflectionRes)) {
+				res += reflectionRes * hit.material->getSpecular();
+			}
+		}
+		return true;
+	}
+	return false;
 }

@@ -129,6 +129,8 @@
     <ClCompile Include="MiroWindow.cpp" />
     <ClCompile Include="Perlin.cpp" />
     <ClCompile Include="PFMLoader.cpp" />
+    <ClCompile Include="PhongMaterial.cpp" />
+    <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Triangle.cpp" />
@@ -152,6 +154,7 @@
     <ClInclude Include="OpenGL.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="PFMLoader.h" />
+    <ClInclude Include="PhongMaterial.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />

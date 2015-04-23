@@ -3,11 +3,16 @@
 #include "Scene.h"
 #include <algorithm>
 
-
-PhongMaterial::PhongMaterial(const Vector3& kd, const Vector3& ks, const Vector3& kt, const float shine, const float ri) 
-	: m_diffuse(kd), m_specular(ks), m_transparency(kt), m_shininess(shine), m_refractionIndex(ri) {
+#define PHONG_CONSTANT 1
 
 
+PhongMaterial::PhongMaterial(const Vector3& kd, const Vector3& ks, const Vector3& kt, const float shine, const float ri) {
+
+	m_diffuse = kd;
+	m_specular = ks;
+	m_transparency = kt;
+	m_shininess = shine;
+	m_refractionIndex = ri;
 }
 
 
@@ -30,27 +35,34 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		Vector3 l = pLight->position() - hit.P;
 
 
-		// Reflection vector: r = d + 2(d dot n)n
-		Vector3 r = (-l + 2 * dot(l, hit.N) * hit.N).normalized();
 
-		// the inverse-squared falloff
-		float falloff = l.length2();
+		// the inverse-squared falloff 
+		float falloff = 1.0f / (4.0f * PI * l.length2());
 
 		// normalize the light direction
-		l /= sqrt(falloff);
-
-		falloff = 1.0f / (falloff * 4.0f * PI*PI);
+		l.normalize();
 
 		// get the diffuse component
 		float nDotL = dot(hit.N, l);
 
 		Vector3 result = pLight->color();
+		result *= m_diffuse;
 
-		L += (std::max(0.0f, nDotL * falloff * pLight->wattage() ) * m_diffuse * m_diffuse) * result;
+		// E = (phi * (n dot l)) / 4 * PI * r^2
+		float irradiance = pLight->wattage() * nDotL * falloff;
+
+		L += (std::max(0.0f, irradiance ) ) * result;
+
 
 		// get the specular component
-		//float eDotR = dot(viewDir, r);
-		float eDotR = std::max(0.0f, std::min(1.0f, dot(-ray.d, r)));
+
+		// Reflection vector: r = d + 2(d dot n)n
+		Vector3 r = (-l + 2 * dot(l, hit.N) * hit.N).normalized();
+
+		float eDotR = dot(viewDir, r);
+		//float eDotR = std::max(0.0f, std::min(1.0f, dot(-ray.d, r)));
+		eDotR = 0.0f > eDotR ? 0.0f : 1.0f < eDotR ? 1.0f : eDotR; // clamp it to [0..1]
+		eDotR = pow(eDotR, PHONG_CONSTANT);
 		L += std::max(0.0f, eDotR * falloff * pLight->wattage());
 	}
 

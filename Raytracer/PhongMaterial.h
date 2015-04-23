@@ -13,14 +13,5 @@ public:
 	virtual Vector3 shade(const Ray& ray, const HitInfo& hit,
 		const Scene& scene) const;
 
-	void setDiffuse(const Vector3& kd) { m_diffuse = kd; }
-
-protected:
-	Vector3 m_diffuse;
-	Vector3 m_specular; // specular reflection
-	Vector3 m_transparency; // refraction
-
-	float m_shininess;
-	float m_refractionIndex;
 };
 

@@ -1,7 +1,28 @@
 #ifndef CSE168_RAY_H_INCLUDED
 #define CSE168_RAY_H_INCLUDED
 
-#include "Vector3.h"
+#include "Material.h"
+
+//! Contains information about a ray hit with a surface.
+/*!
+HitInfos are used by object intersection routines. They are useful in
+order to return more than just the hit distance.
+*/
+class HitInfo {
+public:
+	float t;                            //!< The hit distance
+	Vector3 P;                          //!< The hit point
+	Vector3 N;                          //!< Shading normal vector
+	const Material* material;           //!< Material of the intersected object
+
+	//! Default constructor.
+	explicit HitInfo(float t = 0.0f,
+		const Vector3& P = Vector3(),
+		const Vector3& N = Vector3(0.0f, 1.0f, 0.0f)) :
+		t(t), P(P), N(N), material(0) {
+		// empty
+	}
+};
 
 class Ray
 {
@@ -18,30 +39,13 @@ public:
     {
         // empty
     }
+
+	// create reflection ray
+	Ray reflect(const HitInfo& hit) const;
+
+	// create refraction ray
+	Ray refract(const HitInfo& hit) const;
 };
 
-
-//! Contains information about a ray hit with a surface.
-/*!
-    HitInfos are used by object intersection routines. They are useful in
-    order to return more than just the hit distance.
-*/
-class HitInfo
-{
-public:
-    float t;                            //!< The hit distance
-    Vector3 P;                          //!< The hit point
-    Vector3 N;                          //!< Shading normal vector
-    const Material* material;           //!< Material of the intersected object
-
-    //! Default constructor.
-    explicit HitInfo(float t = 0.0f,
-                     const Vector3& P = Vector3(),
-                     const Vector3& N = Vector3(0.0f, 1.0f, 0.0f)) :
-        t(t), P(P), N(N), material (0)
-    {
-        // empty
-    }
-};
 
 #endif // CSE168_RAY_H_INCLUDED

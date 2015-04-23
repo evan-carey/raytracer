@@ -25,6 +25,9 @@ public:
     bool trace(HitInfo& minHit, const Ray& ray,
                float tMin = 0.0f, float tMax = MIRO_TMAX) const;
 
+	// recursive trace to include reflection and refraction
+	bool trace(const Ray& ray, int numCalls, Vector3& res);
+
 protected:
     Objects m_objects;
     BVH m_bvh;
