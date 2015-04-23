@@ -22,6 +22,8 @@ public:
 	bool isDiffuse() const;
 	bool isSpecular() const;
 	bool isTransparent() const;
+
+	float refractionIndex() const { return m_refractionIndex; }
 	
 protected:
 	Vector3 m_diffuse;

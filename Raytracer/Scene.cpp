@@ -92,6 +92,15 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 				res += reflectionRes * hit.material->getSpecular();
 			}
 		}
+
+		// check refraction
+		if (hit.material->isTransparent()) {
+			Ray refraction = ray.refract(hit);
+			Vector3 refractionRes;
+			if (trace(refraction, numCalls, refractionRes)) {
+				res += refractionRes * hit.material->getTransparency();
+			}
+		}
 		return true;
 	}
 	return false;

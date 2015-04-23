@@ -147,7 +147,7 @@ void makeTeapotScene() {
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
 	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(1.0f), Vector3(0.0f), 1.0f, 1.0f);
-	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(1.0f),Vector3(0.0f), 3.0f, 1.5f);
+	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f),Vector3(1.0f), 3.0f, 1.5f);
 
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");

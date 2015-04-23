@@ -10,10 +10,33 @@ Ray Ray::reflect(const HitInfo& hit) const {
 }
 
 Ray Ray::refract(const HitInfo& hit) const {
-	Ray res;
-	res.o = hit.P;
+	
 
-	
-	
-	return res;
+	Vector3 n;
+
+	// indices of refraction
+	float n1 = 1.0f;
+	float n2 = 1.0f;
+
+	if (dot(hit.N, this->d) < 0) {
+		// entering object
+		n2 = hit.material->refractionIndex();
+		n = hit.N;
+	} else {
+		// leaving object
+		n1 = hit.material->refractionIndex();
+		n = -hit.N;
+	}
+
+	// compute energy of refracted ray ( cos^2 (theta2) )
+	float cosTheta1 = dot(this->d, n); // NOTE: should this be n or hit.N?
+	float e = 1 - ((n1*n1) / (n2*n2)) * (1 - cosTheta1*cosTheta1);
+
+	if (e <= 0.0f) { // total internal reflection
+		return reflect(hit);
+	}
+
+	Vector3 dir = (n1 / n2) * (this->d - n * cosTheta1) - n * (sqrt(e));
+	Vector3 origin = hit.P + (dir * epsilon);
+	return Ray(origin, dir);
 }
