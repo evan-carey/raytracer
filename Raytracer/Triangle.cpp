@@ -69,6 +69,8 @@ Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax)
 
 	float D = dAB_AB * dAC_AC - dAB_AC * dAB_AC; // determinant
 
+	if (D == 0.0f) return false; // ray parallel to triangle plane
+
 	float beta = (dAC_AC * dAQ_AB - dAB_AC * dAQ_AC) / D;
 	float gamma = (dAB_AB * dAQ_AC - dAB_AC * dAQ_AB) / D;
 

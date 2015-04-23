@@ -10,6 +10,7 @@
 #include "TriangleMesh.h"
 #include "Triangle.h"
 #include "Lambert.h"
+#include "PhongMaterial.h"
 
 void
 makeBunnyScene() {
@@ -127,12 +128,12 @@ void makeTeapotScene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(512, 512);
+	g_image->resize(256, 256);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
 	g_camera->setEye(Vector3(-2, 3, 5));
-	g_camera->setLookAt(Vector3(-.5, 1, 0));
+	g_camera->setLookAt(Vector3(0, 1, 0));
 	g_camera->setUp(Vector3(0, 1, 0));
 	g_camera->setFOV(45);
 
@@ -140,10 +141,12 @@ void makeTeapotScene() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(-3, 15, 3));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(500);
+	light->setWattage(5000);
 	g_scene->addLight(light);
 
-	Material* mat = new Lambert(Vector3(1.0f));
+
+	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(0.75f), Vector3(0.0f), 1.0f, 1.0f);
+	Material* mat = new PhongMaterial(Vector3(0.5f), Vector3(1.0f),Vector3(0.5f), 3.0f, 1.5f);
 
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
@@ -170,7 +173,7 @@ void makeTeapotScene() {
 	Triangle* t = new Triangle;
 	t->setIndex(0);
 	t->setMesh(floor);
-	t->setMaterial(mat);
+	t->setMaterial(floormat);
 	g_scene->addObject(t);
 
 	// let objects do pre-calculations if needed
