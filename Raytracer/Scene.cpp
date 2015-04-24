@@ -5,6 +5,11 @@
 #include "Console.h"
 
 #define NUM_TRACE_CALLS 3
+#define OPEN_MP 1
+
+#ifdef OPEN_MP
+#include <omp.h>
+#endif
 
 Scene * g_scene = 0;
 
@@ -44,16 +49,21 @@ Scene::preCalc()
 void
 Scene::raytraceImage(Camera *cam, Image *img)
 {
-    Ray ray;
+    //Ray ray;
     HitInfo hitInfo;
-    Vector3 shadeResult;
+    //Vector3 shadeResult;
     
     // loop over all pixels in the image
+#ifdef OPEN_MP
+	#pragma omp parallel for schedule(dynamic)
+#endif
     for (int j = 0; j < img->height(); ++j)
     {
         for (int i = 0; i < img->width(); ++i)
         {
-            ray = cam->eyeRay(i, j, img->width(), img->height());
+
+            Ray ray = cam->eyeRay(i, j, img->width(), img->height());
+			Vector3 shadeResult;
             //if (trace(hitInfo, ray))
 			if (trace(ray, 0, shadeResult))
             {
@@ -61,10 +71,20 @@ Scene::raytraceImage(Camera *cam, Image *img)
                 img->setPixel(i, j, shadeResult);
             }
         }
+
         img->drawScanline(j);
+
         glFinish();
-        printf("Rendering Progress: %.3f%%\r", j/float(img->height())*100.0f);
-        fflush(stdout);
+#ifdef OPEN_MP
+		if (omp_get_thread_num() == 0) 
+		{
+			printf("Rendering Progress: %.3f%%\r", j / float(img->height())*100.0f * omp_get_num_threads());
+			fflush(stdout);
+		}
+#else 
+		printf("Rendering Progress: %.3f%%\r", j / float(img->height())*100.0f);
+		fflush(stdout);
+#endif
     }
     
     printf("Rendering Progress: 100.000%\n");
