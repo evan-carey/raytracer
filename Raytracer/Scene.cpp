@@ -47,12 +47,8 @@ Scene::preCalc()
 }
 
 void
-Scene::raytraceImage(Camera *cam, Image *img)
-{
-    //Ray ray;
-    HitInfo hitInfo;
-    //Vector3 shadeResult;
-    
+Scene::raytraceImage(Camera *cam, Image *img) 
+{   
     // loop over all pixels in the image
 #ifdef OPEN_MP
 	#pragma omp parallel for schedule(dynamic)
@@ -77,14 +73,11 @@ Scene::raytraceImage(Camera *cam, Image *img)
         glFinish();
 #ifdef OPEN_MP
 		if (omp_get_thread_num() == 0) 
+#endif
 		{
-			printf("Rendering Progress: %.3f%%\r", j / float(img->height())*100.0f * omp_get_num_threads());
+			printf("Rendering Progress: %.3f%%\r", j / float(img->height())*100.0f);
 			fflush(stdout);
 		}
-#else 
-		printf("Rendering Progress: %.3f%%\r", j / float(img->height())*100.0f);
-		fflush(stdout);
-#endif
     }
     
     printf("Rendering Progress: 100.000%\n");
