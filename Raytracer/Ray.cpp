@@ -36,6 +36,7 @@ Ray Ray::refract(const HitInfo& hit) const {
 		return reflect(hit);
 	}
 
+	// create refraction ray
 	Vector3 dir = (n1 / n2) * (this->d - n * cosTheta1) - n * (sqrt(e));
 	Vector3 origin = hit.P + (dir * epsilon);
 	return Ray(origin, dir);

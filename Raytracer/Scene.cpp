@@ -110,6 +110,7 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 		if (hit.material->isTransparent()) {
 			Ray refraction = ray.refract(hit);
 			Vector3 refractionRes;
+			// recurse on refraction ray
 			if (trace(refraction, numCalls, refractionRes)) {
 				res += refractionRes * hit.material->getTransparency();
 			}

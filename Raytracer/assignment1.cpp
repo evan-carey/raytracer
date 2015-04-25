@@ -128,7 +128,7 @@ void makeTeapotScene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(512, 512);
+	g_image->resize(256, 256);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
@@ -139,15 +139,15 @@ void makeTeapotScene() {
 
 	// create and place a point light source
 	PointLight * light = new PointLight;
-	light->setPosition(Vector3(-3, 15, 3));
+	light->setPosition(Vector3(-3, 5, 3));
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(500);
 	g_scene->addLight(light);
 
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
-	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(1.0f), Vector3(0.0f), 1.0f, 1.0f);
-	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f),Vector3(1.0f), 3.0f, 1.5f);
+	Material* floormat = new PhongMaterial(Vector3(1.0f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
+	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f),Vector3(1.0f), 1.0f, 1.5f);
 
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
