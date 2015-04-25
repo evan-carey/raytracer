@@ -23,6 +23,7 @@ public:
 	bool isSpecular() const;
 	bool isTransparent() const;
 
+	float shininess() const { return m_shininess; }
 	float refractionIndex() const { return m_refractionIndex; }
 	
 protected:

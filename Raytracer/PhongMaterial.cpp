@@ -70,7 +70,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		float eDotR = dot(viewDir, r);
 		//float eDotR = std::max(0.0f, std::min(1.0f, dot(-ray.d, r)));
 		eDotR = 0.0f > eDotR ? 0.0f : 1.0f < eDotR ? 1.0f : eDotR; // clamp it to [0..1]
-		eDotR = pow(eDotR, PHONG_CONSTANT);
+		eDotR = pow(eDotR, (int)shininess());
 		L += std::max(0.0f, eDotR * falloff * pLight->wattage());
 	}
 
