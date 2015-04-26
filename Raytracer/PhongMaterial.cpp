@@ -13,6 +13,16 @@ PhongMaterial::PhongMaterial(const Vector3& kd, const Vector3& ks, const Vector3
 	m_transparency = kt;
 	m_shininess = shine;
 	m_refractionIndex = ri;
+
+	// NOTE: d,s,t >= 0 && sum(d,s,t) <= 1
+	for (int i = 0; i < 2; i++) {
+		m_diffuse[i] = m_diffuse[i] < 0.0f ? 0.0f : m_diffuse[i] > 1.0f ? 1.0f : m_diffuse[i];
+		m_specular[i] = m_specular[i] < 0.0f ? 0.0f : m_specular[i] > 1.0f ? 1.0f : m_specular[i];
+		m_transparency[i] = m_transparency[i] < 0.0f ? 0.0f : m_transparency[i] > 1.0f ? 1.0f : m_transparency[i];
+		
+		m_transparency[i] = m_transparency[i] < 1.0f - m_specular[i] ? m_transparency[i] : 1.0f - m_specular[i];
+		m_diffuse[i] = m_diffuse[i] < 1.0f - m_specular[i] - m_transparency[i] ? m_diffuse[i] : 1.0f - m_specular[i] - m_transparency[i];
+	}
 }
 
 

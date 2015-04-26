@@ -89,7 +89,8 @@ void makeSphereScene() {
 	light->setWattage(500);
 	g_scene->addLight(light);
 
-	Material* mat = new Lambert(Vector3(1.0f));
+	Material* floormat = new PhongMaterial(Vector3(1.0f));
+	Material* spheremat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
 
 	TriangleMesh * sphere = new TriangleMesh;
 	sphere->load("res/models/sphere.obj");
@@ -99,7 +100,7 @@ void makeSphereScene() {
 		Triangle* t = new Triangle;
 		t->setIndex(i);
 		t->setMesh(sphere);
-		t->setMaterial(mat);
+		t->setMaterial(spheremat);
 		g_scene->addObject(t);
 	}
 
@@ -116,7 +117,7 @@ void makeSphereScene() {
 	Triangle* t = new Triangle;
 	t->setIndex(0);
 	t->setMesh(floor);
-	t->setMaterial(mat);
+	t->setMaterial(floormat);
 	g_scene->addObject(t);
 
 	// let objects do pre-calculations if needed
@@ -146,7 +147,7 @@ void makeTeapotScene() {
 
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
-	Material* floormat = new PhongMaterial(Vector3(1.0f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
+	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
 	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(1.0f),Vector3(0.0f), 2.0f, 1.5f);
 
 	TriangleMesh * teapot = new TriangleMesh;
