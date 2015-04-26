@@ -3,6 +3,7 @@
 
 #include "Miro.h"
 #include "Vector3.h"
+#include "Texture.h"
 
 class Material
 {
@@ -25,6 +26,10 @@ public:
 
 	float shininess() const { return m_shininess; }
 	float refractionIndex() const { return m_refractionIndex; }
+
+	virtual void applyTexture(Texture* tex) { m_texture = tex; }
+	Texture* getTexture() { return m_texture; }
+	bool isTextured() { return m_texture != NULL; }
 	
 protected:
 	Vector3 m_diffuse;
@@ -33,6 +38,8 @@ protected:
 
 	float m_shininess;
 	float m_refractionIndex;
+
+	Texture* m_texture;
 };
 
 #endif // CSE168_MATERIAL_H_INCLUDED

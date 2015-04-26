@@ -10,6 +10,8 @@ public:
 
 	virtual ~PhongMaterial();
 
+	virtual 
+
 	virtual Vector3 shade(const Ray& ray, const HitInfo& hit,
 		const Scene& scene) const;
 

@@ -7,10 +7,13 @@ Material::Material()
 	m_transparency = Vector3(0.0f);
 	m_shininess = 0.0f;
 	m_refractionIndex = 1.0f;
+
+	m_texture = NULL;
 }
 
 Material::~Material()
 {
+	delete m_texture;
 }
 
 bool Material::isDiffuse() const {
