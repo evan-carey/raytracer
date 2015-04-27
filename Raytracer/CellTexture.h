@@ -2,8 +2,10 @@
 #include "Texture.h"
 #include "WorleyGrid.h"
 
-
-class CellTexture : Texture {
+/*
+Cellular texture using Worley noise
+*/
+class CellTexture : public Texture {
 public:
 	CellTexture(int numPoints, int w, int h);
 	virtual ~CellTexture();
@@ -16,3 +18,14 @@ protected:
 	WorleyGrid m_grid;
 };
 
+
+/*
+Stone texture
+*/
+class StoneTexture : public Texture {
+public:
+	StoneTexture() {}
+	virtual ~StoneTexture() {}
+	virtual Vector3 getColor(TexPoint& p) const;
+	virtual Vector3 getColor3D(Vector3& v) const;
+};

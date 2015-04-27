@@ -29,7 +29,7 @@ public:
 
 	virtual void applyTexture(Texture* tex) { m_texture = tex; }
 	Texture* getTexture() { return m_texture; }
-	bool isTextured() { return m_texture != NULL; }
+	virtual bool isTextured() const { return m_texture != NULL; }
 	
 protected:
 	Vector3 m_diffuse;

@@ -37,6 +37,15 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 
 	const Lights *lightlist = scene.lights();
 
+	// diffuse color
+	Vector3 color(m_diffuse);
+
+	if (this->isTextured()) {
+		//TexPoint t(0.5f*(hit.P.x + 1), 0.5f*(hit.P.y + 1));
+		//color = m_texture->getColor(t);
+		color = m_texture->getColor3D(Vector3(hit.P));
+	}
+
 	// loop over all of the lights
 	Lights::const_iterator lightIter;
 	for (lightIter = lightlist->begin(); lightIter != lightlist->end(); lightIter++) {
@@ -64,7 +73,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		float nDotL = dot(hit.N, l);
 
 		Vector3 result = pLight->color();
-		result *= m_diffuse;
+		result *= color; //////////////////////////////////////////////////////////////////
 
 		// E = (phi * (n dot l)) / 4 * PI * r^2
 		float irradiance = pLight->wattage() * nDotL * falloff;

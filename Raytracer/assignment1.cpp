@@ -11,6 +11,7 @@
 #include "Triangle.h"
 #include "Lambert.h"
 #include "PhongMaterial.h"
+#include "CellTexture.h"
 
 void
 makeBunnyScene() {
@@ -77,7 +78,7 @@ void makeSphereScene() {
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
-	g_camera->setEye(Vector3(-2, 3, 5));
+	g_camera->setEye(Vector3(0, 2, 5));
 	g_camera->setLookAt(Vector3(-.5, 1, 0));
 	g_camera->setUp(Vector3(0, 1, 0));
 	g_camera->setFOV(45);
@@ -90,7 +91,12 @@ void makeSphereScene() {
 	g_scene->addLight(light);
 
 	Material* floormat = new PhongMaterial(Vector3(1.0f));
-	Material* spheremat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
+	Material* spheremat = new PhongMaterial(Vector3(1.0f), Vector3(0.0f), Vector3(0.0f), 1.0f, 1.5f);
+
+	StoneTexture* stone = new StoneTexture();
+
+	spheremat->applyTexture(stone);
+	floormat->applyTexture(stone);
 
 	TriangleMesh * sphere = new TriangleMesh;
 	sphere->load("res/models/sphere.obj");
@@ -140,7 +146,7 @@ void makeTeapotScene() {
 
 	// create and place a point light source
 	PointLight * light = new PointLight;
-	light->setPosition(Vector3(-3, 5, 3));
+	light->setPosition(Vector3(-3, 8, 3));
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(500);
 	g_scene->addLight(light);
@@ -148,7 +154,12 @@ void makeTeapotScene() {
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
 	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
-	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(1.0f),Vector3(0.0f), 2.0f, 1.5f);
+	Material* mat = new PhongMaterial(Vector3(1.0f), Vector3(0.0f),Vector3(0.0f), 1.0f, 1.0f);
+
+	// texture
+	StoneTexture* stoneTexture = new StoneTexture();
+	mat->applyTexture(stoneTexture);
+	floormat->applyTexture(stoneTexture);
 
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
