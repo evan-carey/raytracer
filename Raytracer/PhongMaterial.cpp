@@ -53,11 +53,15 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 
 		Vector3 l = pLight->position() - hit.P;
 
+		
 		// check for shadow
 		Ray shadow(hit.P + (l.normalized() * epsilon), l.normalized());
 		HitInfo h;
 		// if theree's an object between hitpoint and light source, don't shade it
 		if (scene.trace(h, shadow, 0.0f, l.length())) {
+			if (!h.material->isTransparent()) {
+				continue;
+			}
 			if (dot(h.N, l) < 0.0f) {
 				continue;
 			}
@@ -73,7 +77,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		float nDotL = dot(hit.N, l);
 
 		Vector3 result = pLight->color();
-		result *= color; //////////////////////////////////////////////////////////////////
+		result *= color;
 
 		// E = (phi * (n dot l)) / 4 * PI * r^2
 		float irradiance = pLight->wattage() * nDotL * falloff;
@@ -82,15 +86,15 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 
 
 		// get the specular component
+		if (isSpecular()) {
+			// Reflection vector: r = d + 2(d dot n)n
+			Vector3 r = (-l + 2 * dot(l, hit.N) * hit.N).normalized();
 
-		// Reflection vector: r = d + 2(d dot n)n
-		Vector3 r = (-l + 2 * dot(l, hit.N) * hit.N).normalized();
-
-		float eDotR = dot(viewDir, r);
-		//float eDotR = std::max(0.0f, std::min(1.0f, dot(-ray.d, r)));
-		eDotR = 0.0f > eDotR ? 0.0f : 1.0f < eDotR ? 1.0f : eDotR; // clamp it to [0..1]
-		eDotR = pow(eDotR, (int)shininess());
-		L += std::max(0.0f, eDotR * falloff * pLight->wattage());
+			float eDotR = dot(viewDir, r);
+			eDotR = 0.0f > eDotR ? 0.0f : 1.0f < eDotR ? 1.0f : eDotR; // clamp it to [0..1]
+			eDotR = pow(eDotR, (int)shininess());
+			L += std::max(0.0f, eDotR * falloff * pLight->wattage());
+		}
 	}
 
 

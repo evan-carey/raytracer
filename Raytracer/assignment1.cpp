@@ -151,14 +151,20 @@ void makeTeapotScene() {
 	light->setWattage(500);
 	g_scene->addLight(light);
 
+	/*PointLight* light2 = new PointLight();
+	light2->setPosition(Vector3(0, 8, 0));
+	light2->setColor(Vector3(1, 1, 1));
+	light2->setWattage(500);
+	g_scene->addLight(light2);*/
+
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
-	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
-	Material* mat = new PhongMaterial(Vector3(1.0f), Vector3(0.0f),Vector3(0.0f), 1.0f, 1.0f);
+	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(0.5f), Vector3(0.0f), 2.0f, 1.0f);
+	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f),Vector3(1.0f), 1.0f, 1.1f);
 
 	// texture
 	StoneTexture* stoneTexture = new StoneTexture();
-	mat->applyTexture(stoneTexture);
+	//mat->applyTexture(stoneTexture);
 	floormat->applyTexture(stoneTexture);
 
 	TriangleMesh * teapot = new TriangleMesh;

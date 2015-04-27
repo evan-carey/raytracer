@@ -32,7 +32,7 @@ Ray Ray::refract(const HitInfo& hit) const {
 	float cosTheta1 = dot(this->d, n); // NOTE: should this be n or hit.N?
 	float e = 1 - ((n1*n1) / (n2*n2)) * (1 - cosTheta1*cosTheta1);
 
-	if (e <= 0.0f) { // total internal reflection
+	if (e < 0.0f) { // total internal reflection
 		return reflect(hit);
 	}
 

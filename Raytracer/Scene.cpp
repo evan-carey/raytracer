@@ -87,33 +87,38 @@ Scene::raytraceImage(Camera *cam, Image *img)
 bool
 Scene::trace(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const
 {
-    return m_bvh.intersect(minHit, ray, tMin, tMax);
+   return m_bvh.intersect(minHit, ray, tMin, tMax);
 }
 
 bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 	HitInfo hit;
-	if (numCalls < NUM_TRACE_CALLS && trace(hit, ray)) {
-		res = hit.material->shade(ray, hit, *this);
-		numCalls++;
+	if (numCalls < NUM_TRACE_CALLS) {
+		if (trace(hit, ray)) {
+			res = hit.material->shade(ray, hit, *this);
+			numCalls++;
 
-		// check reflection
-		if (hit.material->isSpecular()) {
-			Ray reflection = ray.reflect(hit);
-			Vector3 reflectionRes;
-			// recurse on reflection ray
-			if (trace(reflection, numCalls, reflectionRes)) {
-				res += reflectionRes * hit.material->getSpecular();
+			// check reflection
+			if (hit.material->isSpecular()) {
+				Ray reflection = ray.reflect(hit);
+				Vector3 reflectionRes;
+				// recurse on reflection ray
+				if (trace(reflection, numCalls, reflectionRes)) {
+					res += reflectionRes * hit.material->getSpecular();
+				}
 			}
-		}
 
-		// check refraction
-		if (hit.material->isTransparent()) {
-			Ray refraction = ray.refract(hit);
-			Vector3 refractionRes;
-			// recurse on refraction ray
-			if (trace(refraction, numCalls, refractionRes)) {
-				res += refractionRes * hit.material->getTransparency();
+			// check refraction
+			if (hit.material->isTransparent()) {
+				Ray refraction = ray.refract(hit);
+				Vector3 refractionRes;
+				// recurse on refraction ray
+				if (trace(refraction, numCalls, refractionRes)) {
+					res += refractionRes * hit.material->getTransparency();
+				}
 			}
+			
+		} else {
+			res.set(0.5f, 0.5f, 0.5f); // TODO: remove this temporary gray background color
 		}
 		return true;
 	}
