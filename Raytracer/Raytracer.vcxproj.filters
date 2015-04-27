@@ -78,10 +78,13 @@
     <ClCompile Include="CellTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WorleyGrid.cpp">
+    <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
+    <ClCompile Include="StoneTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorleyGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -164,10 +167,13 @@
     <ClInclude Include="CellTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorleyGrid.h">
+    <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="StoneTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorleyGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

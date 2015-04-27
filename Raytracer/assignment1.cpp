@@ -11,7 +11,7 @@
 #include "Triangle.h"
 #include "Lambert.h"
 #include "PhongMaterial.h"
-#include "CellTexture.h"
+#include "StoneTexture.h"
 
 void
 makeBunnyScene() {
