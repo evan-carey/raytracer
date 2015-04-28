@@ -151,11 +151,11 @@ void makeTeapotScene() {
 	light->setWattage(500);
 	g_scene->addLight(light);
 
-	/*PointLight* light2 = new PointLight();
-	light2->setPosition(Vector3(0, 8, 0));
+	PointLight* light2 = new PointLight();
+	light2->setPosition(Vector3(3, 2, -5));
 	light2->setColor(Vector3(1, 1, 1));
-	light2->setWattage(500);
-	g_scene->addLight(light2);*/
+	light2->setWattage(50);
+	g_scene->addLight(light2);
 
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
