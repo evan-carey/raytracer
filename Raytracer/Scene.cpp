@@ -4,7 +4,7 @@
 #include "Image.h"
 #include "Console.h"
 
-#define NUM_TRACE_CALLS 3
+#define NUM_TRACE_CALLS 5
 #define OPEN_MP 1
 
 #ifdef OPEN_MP
@@ -65,7 +65,9 @@ Scene::raytraceImage(Camera *cam, Image *img)
             {
                 //shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
                 img->setPixel(i, j, shadeResult);
-            }
+			} else {
+				img->setPixel(i, j, cam->bgColor());
+			}
         }
 
         img->drawScanline(j);
@@ -92,17 +94,15 @@ Scene::trace(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const
 
 bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 	HitInfo hit;
-	if (numCalls < NUM_TRACE_CALLS) {
-		if (trace(hit, ray)) {
+	if (numCalls < NUM_TRACE_CALLS && trace(hit, ray)) {
 			res = hit.material->shade(ray, hit, *this);
-			numCalls++;
 
 			// check reflection
 			if (hit.material->isSpecular()) {
 				Ray reflection = ray.reflect(hit);
 				Vector3 reflectionRes;
 				// recurse on reflection ray
-				if (trace(reflection, numCalls, reflectionRes)) {
+				if (trace(reflection, numCalls + 1, reflectionRes)) {
 					res += reflectionRes * hit.material->getSpecular();
 				}
 			}
@@ -112,14 +112,10 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 				Ray refraction = ray.refract(hit);
 				Vector3 refractionRes;
 				// recurse on refraction ray
-				if (trace(refraction, numCalls, refractionRes)) {
+				if (trace(refraction, numCalls + 1, refractionRes)) {
 					res += refractionRes * hit.material->getTransparency();
 				}
 			}
-			
-		} else {
-			res.set(0.5f, 0.5f, 0.5f); // TODO: remove this temporary gray background color
-		}
 		return true;
 	}
 	return false;
