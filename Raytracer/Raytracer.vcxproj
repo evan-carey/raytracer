@@ -119,6 +119,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="assignment1.cpp" />
+    <ClCompile Include="assignment2.cpp" />
     <ClCompile Include="BLPatch.cpp" />
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -143,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assignment1.h" />
+    <ClInclude Include="assignment2.h" />
     <ClInclude Include="BLPatch.h" />
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
