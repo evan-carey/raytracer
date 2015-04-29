@@ -41,8 +41,6 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 	Vector3 color(m_diffuse);
 
 	if (hit.material->isTextured()) {
-		//TexPoint t(0.5f*(hit.P.x + 1), 0.5f*(hit.P.y + 1));
-		//color = m_texture->getColor(t);
 		color = m_texture->getColor3D(Vector3(hit.P));
 	}
 

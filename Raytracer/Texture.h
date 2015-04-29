@@ -21,7 +21,6 @@ public:
 	Texture();
 	virtual ~Texture();
 
-	virtual Vector3 getColor(TexPoint& p) const { return Vector3(0.0f); }
 	virtual Vector3 getColor3D(Vector3& v) const { return Vector3(0.0f); }
 };
 

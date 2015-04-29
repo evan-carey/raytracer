@@ -122,7 +122,6 @@
     <ClCompile Include="BLPatch.cpp" />
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CellTexture.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Lambert.cpp" />
@@ -141,14 +140,12 @@
     <ClCompile Include="TriangleMesh.cpp" />
     <ClCompile Include="TriangleMeshLoad.cpp" />
     <ClCompile Include="Worley.cpp" />
-    <ClCompile Include="WorleyGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assignment1.h" />
     <ClInclude Include="BLPatch.h" />
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CellTexture.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Lambert.h" />
@@ -172,7 +169,6 @@
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />
     <ClInclude Include="Worley.h" />
-    <ClInclude Include="WorleyGrid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
