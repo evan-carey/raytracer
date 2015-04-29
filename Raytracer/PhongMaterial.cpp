@@ -40,7 +40,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 	// diffuse color
 	Vector3 color(m_diffuse);
 
-	if (this->isTextured()) {
+	if (hit.material->isTextured()) {
 		//TexPoint t(0.5f*(hit.P.x + 1), 0.5f*(hit.P.y + 1));
 		//color = m_texture->getColor(t);
 		color = m_texture->getColor3D(Vector3(hit.P));
@@ -53,16 +53,12 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 
 		Vector3 l = pLight->position() - hit.P;
 
-		
 		// check for shadow
-		Ray shadow(hit.P + (l.normalized() * epsilon), l.normalized());
-		HitInfo h;
+		Ray shadow(hit.P + (l.normalized() * epsilon), l);
+		HitInfo shadowHit;
 		// if theree's an object between hitpoint and light source, don't shade it
-		if (scene.trace(h, shadow, 0.0f, l.length())) {
-			if (!h.material->isTransparent()) {
-				continue;
-			}
-			if (dot(h.N, l) < 0.0f) {
+		if (scene.trace(shadowHit, shadow, 0.0f, l.length())) {
+			if (dot(shadowHit.N, l) < 0.0f) {
 				continue;
 			}
 		}

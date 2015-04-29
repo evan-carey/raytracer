@@ -31,7 +31,7 @@ Ray Ray::refract(const HitInfo& hit) const {
 	// compute energy of refracted ray ( cos^2 (theta2) )
 	float cosTheta1 = dot(this->d, n); // NOTE: should this be n or hit.N?
 	float e = 1 - ((n1*n1) / (n2*n2)) * (1 - cosTheta1*cosTheta1);
-
+	//float e = 1.0f;
 	if (e < 0.0f) { // total internal reflection
 		return reflect(hit);
 	}

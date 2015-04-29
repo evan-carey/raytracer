@@ -4,7 +4,8 @@
 #include "Image.h"
 #include "Console.h"
 
-#define NUM_TRACE_CALLS 5
+#define NUM_TRACE_CALLS 6
+
 #define OPEN_MP 1
 
 #ifdef OPEN_MP

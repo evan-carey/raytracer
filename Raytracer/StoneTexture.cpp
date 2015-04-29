@@ -47,9 +47,9 @@ Vector3 StoneTexture::getColor3D(Vector3& v) const {
 	r = g = b = 0.0f;
 
 	// small values here result in larger cells
-	float x = v.x * 10.0f;
-	float y = v.y * 10.0f;
-	float z = v.z * 10.0f;
+	float x = v.x * 5.5f;
+	float y = v.y * 5.5f;
+	float z = v.z * 5.5f;
 
 
 	// Worley texturing
@@ -64,17 +64,19 @@ Vector3 StoneTexture::getColor3D(Vector3& v) const {
 
 	float color = Fn[1] - Fn[0];
 	if (color < 0.1f) { // thicker cell walls
-		color = 0.0f;
+		// cell wall color
+		r = 0.25f; g = 0.12f; b = 0.08f;
+		//color = 0.0f;
 	} else {
 		// add Perlin noise
 		float noise = PerlinNoise::noise(x, y, z);
 		color += fabs(noise);
+		// changing these will change the overall color palette of the texture
+		r += color + (float)(ID[0] % 10) / 10.0f;
+		g += color + (float)(ID[0] % 10) / 15.0f;
+		b += color + (float)(ID[0] % 10) / 30.0f;
 	}
 
-	// changing these will change the overall color palette of the texture
-	r = color + (float)(ID[0] % 10) / 10.0f;
-	g = color + (float)(ID[0] % 10) / 20.0f;
-	b = color + (float)(ID[0] % 10) / 20.0f;
 
 
 	delete[] Fn;

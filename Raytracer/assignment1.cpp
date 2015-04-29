@@ -12,6 +12,7 @@
 #include "Lambert.h"
 #include "PhongMaterial.h"
 #include "StoneTexture.h"
+#include "Sphere.h"
 
 void
 makeBunnyScene() {
@@ -32,10 +33,10 @@ makeBunnyScene() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(-3, 15, 3));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(500);
+	light->setWattage(800);
 	g_scene->addLight(light);
 
-	Material* mat = new Lambert(Vector3(1.0f));
+	Material* mat = new PhongMaterial(Vector3(1.0f), Vector3(0.0f), Vector3(0.0f), 1.0f, 1.0f);
 
 	TriangleMesh * bunny = new TriangleMesh;
 	bunny->load("res/models/bunny.obj");
@@ -77,25 +78,47 @@ void makeSphereScene() {
 	g_image->resize(512, 512);
 
 	// set up the camera
-	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
-	g_camera->setEye(Vector3(0, 2, 5));
-	g_camera->setLookAt(Vector3(-.5, 1, 0));
+	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.0f));
+	g_camera->setEye(Vector3(0, 4, 7));
+	g_camera->setLookAt(Vector3(0, 1, 0));
 	g_camera->setUp(Vector3(0, 1, 0));
 	g_camera->setFOV(45);
 
 	// create and place a point light source
 	PointLight * light = new PointLight;
-	light->setPosition(Vector3(-3, 15, 3));
+	light->setPosition(Vector3(3, 15, -3));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(500);
+	light->setWattage(300);
 	g_scene->addLight(light);
 
+	PointLight* light2 = new PointLight();
+	light2->setPosition(Vector3(-3, 2, 5));
+	light2->setColor(Vector3(1, 1, 1));
+	light2->setWattage(500);
+	g_scene->addLight(light2);
+
 	Material* floormat = new PhongMaterial(Vector3(1.0f));
-	Material* spheremat = new PhongMaterial(Vector3(1.0f), Vector3(0.0f), Vector3(0.0f), 1.0f, 1.5f);
+	Material* spheremat = new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 512.0f, 1.5f);
+
+	Material* spheremat2 = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.15f);
+
+	Material* spheremat3 = new PhongMaterial(Vector3(1.0f, 0.6, 0.6f), Vector3(0.0f), Vector3(0.0f),/*Vector3(0.8f, 0.8f, 1.0f),*/ 1.0f, 1.2f);
+
+	Sphere* sphere1 = new Sphere();
+	sphere1->setCenter(Vector3(-0.75, 0.0, -1));
+	sphere1->setRadius(0.5f);
+	sphere1->setMaterial(spheremat);
+	g_scene->addObject(sphere1);
+
+	Sphere* sphere2 = new Sphere();
+	sphere2->setCenter(Vector3(0.75, 0.0, -1));
+	sphere2->setRadius(0.5);
+	sphere2->setMaterial(spheremat2);
+	g_scene->addObject(sphere2);
 
 	StoneTexture* stone = new StoneTexture();
 
-	spheremat->applyTexture(stone);
+	//spheremat3->applyTexture(stone);
 	floormat->applyTexture(stone);
 
 	TriangleMesh * sphere = new TriangleMesh;
@@ -106,7 +129,7 @@ void makeSphereScene() {
 		Triangle* t = new Triangle;
 		t->setIndex(i);
 		t->setMesh(sphere);
-		t->setMaterial(spheremat);
+		t->setMaterial(spheremat3);
 		g_scene->addObject(t);
 	}
 
@@ -148,24 +171,24 @@ void makeTeapotScene() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(-3, 8, 3));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(500);
+	light->setWattage(400);
 	g_scene->addLight(light);
 
 	PointLight* light2 = new PointLight();
 	light2->setPosition(Vector3(3, 2, -5));
 	light2->setColor(Vector3(1, 1, 1));
-	light2->setWattage(50);
+	light2->setWattage(100);
 	g_scene->addLight(light2);
 
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
-	Material* floormat = new PhongMaterial(Vector3(0.5f), Vector3(0.5f), Vector3(0.0f), 2.0f, 1.0f);
-	Material* mat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f),Vector3(1.0f), 1.0f, 1.1f);
+	Material* floormat = new PhongMaterial(Vector3(0.8f, 0.8f, 1.0f), Vector3(0.0f), Vector3(0.0f), 32.0f, 1.0f);
+	Material* mat = new PhongMaterial(Vector3(0.1f), Vector3(0.9f),Vector3(0.0f), 8.0f, 1.5f);
 
 	// texture
 	StoneTexture* stoneTexture = new StoneTexture();
 	//mat->applyTexture(stoneTexture);
-	floormat->applyTexture(stoneTexture);
+	//floormat->applyTexture(stoneTexture);
 
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
