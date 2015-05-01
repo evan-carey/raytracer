@@ -4,8 +4,7 @@
 #include "Miro.h"
 #include "Object.h"
 
-class BVH
-{
+class BVH {
 public:
     void build(Objects * objs);
 
