@@ -4,6 +4,12 @@
 #include "Miro.h"
 #include "Object.h"
 
+
+struct BSP_Node {
+	float plane_pos;
+	BSP_Node *left;
+};
+
 class BVH {
 public:
     void build(Objects * objs);
