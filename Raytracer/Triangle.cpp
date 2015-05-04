@@ -15,10 +15,35 @@ Triangle::~Triangle()
 
 }
 
+void Triangle::preCalc() {
 
-void
-Triangle::renderGL()
-{
+	TriangleMesh::TupleI3 ti3 = m_mesh->vIndices()[m_index];
+	const Vector3 & vA = m_mesh->vertices()[ti3.x]; //vertex a of triangle
+	const Vector3 & vB = m_mesh->vertices()[ti3.y]; //vertex b of triangle
+	const Vector3 & vC = m_mesh->vertices()[ti3.z]; //vertex c of triangle
+
+	// calculate bounds
+	Vector3 v[3] = { vA, vB, vC };
+	m_min = m_max = vA;
+	for (int i = 1; i < 3; i++) {
+		// calc min
+		m_min.x = v[i].x < m_min.x ? v[i].x : m_min.x;
+		m_min.y = v[i].y < m_min.y ? v[i].y : m_min.y;
+		m_min.z = v[i].z < m_min.z ? v[i].z : m_min.z;
+		// calc max
+		m_max.x = v[i].x > m_max.x ? v[i].x : m_max.x;
+		m_max.y = v[i].y > m_max.y ? v[i].y : m_max.y;
+		m_max.z = v[i].z > m_max.z ? v[i].z : m_max.z;
+	}
+	
+
+	// calculate centroid
+	Vector3 AB = vB - vA;
+	Vector3 AC = vC - vA;
+	m_center = vA + (AB / 3.0f) + (AC / 3.0f);
+}
+
+void Triangle::renderGL() {
     TriangleMesh::TupleI3 ti3 = m_mesh->vIndices()[m_index];
     const Vector3 & v0 = m_mesh->vertices()[ti3.x]; //vertex a of triangle
     const Vector3 & v1 = m_mesh->vertices()[ti3.y]; //vertex b of triangle
@@ -33,9 +58,7 @@ Triangle::renderGL()
 
 
 
-bool
-Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax)
-{
+bool Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax) {
 	// Get vertices from mesh
 	TriangleMesh::TupleI3 ti3 = m_mesh->vIndices()[m_index];
 	const Vector3 & v0 = m_mesh->vertices()[ti3.x]; //vertex a of triangle
@@ -88,4 +111,9 @@ Triangle::intersect(HitInfo& result, const Ray& r,float tMin, float tMax)
 	result.material = this->m_material;
 
 	return true;
+}
+
+
+void Triangle::calcBounds() {
+
 }

@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include <algorithm>
 
-#define PHONG_CONSTANT 1
 
 
 PhongMaterial::PhongMaterial(const Vector3& kd, const Vector3& ks, const Vector3& kt, const float shine, const float ri) {

@@ -19,10 +19,14 @@ public:
     virtual void renderGL();
     virtual bool intersect(HitInfo& result, const Ray& ray,
                            float tMin = 0.0f, float tMax = MIRO_TMAX);
+
+	virtual void preCalc();
     
 protected:
     TriangleMesh* m_mesh;
     unsigned int m_index;
+private:
+	void calcBounds();
 };
 
 #endif // CSE168_TRIANGLE_H_INCLUDED
