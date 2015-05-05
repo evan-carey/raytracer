@@ -15,7 +15,8 @@ public:
 
 	bool hit(const Ray& ray, float tMin, float tMax) const;
 
-	
+	void setMin( Vector3& min) { m_min.set(min.x, min.y, min.z); }
+	void setMax(Vector3& max) { m_max.set(max.x, max.y, max.z); }
 
 protected:
 	Vector3 m_min; // minimum x,y,z bounds

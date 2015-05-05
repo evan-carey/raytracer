@@ -8,7 +8,9 @@ BoundingBox::BoundingBox() {
 	m_surfaceArea = 0.0f;
 }
 
-BoundingBox::BoundingBox(const Vector3& min, const Vector3& max) : m_min(min), m_max(max) {
+BoundingBox::BoundingBox(const Vector3& min, const Vector3& max) {
+	m_min = Vector3(min);
+	m_max = Vector3(max);
 	m_surfaceArea = calcSurfaceArea(max - min);
 }
 
