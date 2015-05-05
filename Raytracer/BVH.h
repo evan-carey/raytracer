@@ -10,6 +10,8 @@
 struct BoundingBox {
 	Vector3 min;
 	Vector3 max;
+
+	bool hit(const Ray& ray, float& tMin, float& tMax) const;
 };
 
 struct BSP_Node {
@@ -27,9 +29,9 @@ public:
 
     void build(Objects * objs, int depth = 0);
 
-	bool intersect_bsp();
+	bool intersect(HitInfo& hit, const Ray& ray, float tMin = 0.0f, float tMax = MIRO_TMAX) const;
 
-    bool intersect(HitInfo& result, const Ray& ray,
+    bool intersectNode(HitInfo& result, const Ray& ray,
                    float tMin = 0.0f, float tMax = MIRO_TMAX) const;
 
 	void createBoundingBox(BoundingBox& box, Objects *objs);
@@ -40,6 +42,8 @@ protected:
 	BVH *m_left, *m_right;
 	BoundingBox m_box;
 	//BSP_Node* node;
+	int m_axis;
+	float m_plane;
 
 private:
 	float calcCost(BoundingBox& box, Objects* objs);
