@@ -46,6 +46,7 @@ void BVH::build(Objects * objs, int depth) {
 		// current node is a leaf
 		m_leaf = true;
 		m_objects = objs;
+		//fprintf(stdout,"objs.size: %d\n", m_objects->size());
 	} else {
 		// split and build recursively
 		m_leaf = false;
@@ -257,8 +258,8 @@ void BVH::createBoundingBox(BoundingBox& box, Objects *objs) {
 		}
 	}
 
-	box.min = Vector3(min - epsilon);
-	box.max = Vector3(max + epsilon);
+	box.min = min;
+	box.max = max;
 }
 
 bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const {
