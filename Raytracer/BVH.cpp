@@ -211,13 +211,13 @@ void BVH::build(Objects * objs, int depth) {
 		m_right->m_box.max = bestRightBox.max;
 		
 		m_left->build(left, depth + 1);
-		if (m_left->m_leaf) {
-			//left->erase(left->begin(), left->end());
+		if (!m_left->m_leaf) {
+			left->erase(left->begin(), left->end());
 			delete left;
 		}
 		m_right->build(right, depth + 1);
-		if (m_right->m_leaf) {
-			//right->erase(right->begin(), right->end());
+		if (!m_right->m_leaf) {
+			right->erase(right->begin(), right->end());
 			delete right;
 		}
 	}
@@ -257,15 +257,16 @@ void BVH::createBoundingBox(BoundingBox& box, Objects *objs) {
 		}
 	}
 
-	box.min = Vector3(min);
-	box.max = Vector3(max);
+	box.min = Vector3(min - epsilon);
+	box.max = Vector3(max + epsilon);
 }
 
 bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const {
 	minHit.t = tMax;
-
-	if (m_box.hit(ray, tMin, tMax)) {
-		return intersectNode(minHit, ray, tMin, tMax);
+	float min = tMin, max = tMax;
+	if (m_box.hit(ray, min, max)) {
+		//fprintf(stdout, "min: %f, tMin: %f, max: %f, tMax: %f\n", min, tMin, max, tMax);
+		return intersectNode(minHit, ray, min, max);
 	}
 	return false;
 }
@@ -274,17 +275,17 @@ bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) con
 bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const {
 
     bool hit = false;
-    HitInfo tempMinHit;
     minHit.t = tMax;
 
+    HitInfo tempMinHit;
 	//if (m_box.hit(ray, tMin, tMax)) {
 		if (m_leaf) {
 			// intersect objects
 			for (int i = 0; i < m_objects->size(); i++) {
 				if ((*m_objects)[i]->intersect(tempMinHit, ray, tMin, minHit.t)) {
 					if (tempMinHit.t < minHit.t) {
-						hit = true;
 						minHit = tempMinHit;
+						hit = true;
 					}
 				}
 			}
@@ -306,11 +307,12 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 			} else if (t < tMin) {
 				hit = farChild->intersect(minHit, ray, tMin, tMax);
 			} else {
-				if (nearChild->intersect(minHit, ray, tMin, t)) hit = true;
-				if (farChild->intersect(minHit, ray, t, tMax)) hit = true;
+				bool a = (nearChild->intersect(minHit, ray, tMin, t));
+				bool b = (farChild->intersect(minHit, ray, t, tMax));
+				hit = a || b;
 				
 			}
-
+			return hit;
 		}
 
 	//}
@@ -349,5 +351,7 @@ bool BoundingBox::hit(const Ray& ray, float& tMin, float& tMax) const {
 
 	if (max < min || max < tMin || min > tMax) return false;
 
+	tMin = min;
+	tMax = max;
 	return true;
 }

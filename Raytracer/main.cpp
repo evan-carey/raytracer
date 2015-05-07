@@ -13,6 +13,7 @@
 #include "MiroWindow.h"
 
 #include "assignment1.h"
+#include "assignment2.h"
 
 /* Render a Lorenz attractor */
 void makeLorenzScene() {

@@ -183,10 +183,10 @@ void makeTeapotScene() {
 
 	//Material* floormat = new Lambert(Vector3(1.0f));
 	Material* floormat = new PhongMaterial(Vector3(0.8f, 0.8f, 1.0f), Vector3(0.0f), Vector3(0.0f), 32.0f, 1.0f);
-	Material* mat = new PhongMaterial(Vector3(0.1f), Vector3(0.9f),Vector3(0.0f), 8.0f, 1.5f);
+	Material* mat = new PhongMaterial(Vector3(1.0f), Vector3(0.0f),Vector3(0.0f), 8.0f, 1.5f);
 
 	// texture
-	StoneTexture* stoneTexture = new StoneTexture();
+	//StoneTexture* stoneTexture = new StoneTexture();
 	//mat->applyTexture(stoneTexture);
 	//floormat->applyTexture(stoneTexture);
 
@@ -216,7 +216,7 @@ void makeTeapotScene() {
 	t->setIndex(0);
 	t->setMesh(floor);
 	t->setMaterial(floormat);
-	g_scene->addObject(t);
+	//g_scene->addObject(t);
 
 	// let objects do pre-calculations if needed
 	g_scene->preCalc();

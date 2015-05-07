@@ -95,7 +95,7 @@ Scene::trace(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const
 
 bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 	HitInfo hit;
-	if (numCalls < NUM_TRACE_CALLS && trace(hit, ray)) {
+	if (trace(hit, ray)) {
 			res = hit.material->shade(ray, hit, *this);
 
 			// check reflection
