@@ -6,11 +6,12 @@
 
 #define DEPTH 32
 
-static const float infinity = 99999.9f;
+static const float infinity = std::numeric_limits<float>::max();
+static const float n_infinity = std::numeric_limits<float>::min();
 
 BVH::BVH() {
 	m_box.min = Vector3(infinity);
-	m_box.max = Vector3(-infinity);
+	m_box.max = Vector3(n_infinity);
 }
 
 BVH::BVH(Objects* objs) {
@@ -58,6 +59,7 @@ void BVH::build(Objects * objs, int depth) {
 
 		BoundingBox bestLeftBox, bestRightBox;
 
+		// check all dimensions
 		for (int i = 0; i < 3; i++) {
 			Objects *left = new Objects();
 			Objects *right = new Objects();
@@ -78,12 +80,12 @@ void BVH::build(Objects * objs, int depth) {
 					(*right).push_back((*objs)[j]);
 				}
 			}
-			/*leftBB = createBoundingBox(left);
-			rightBB = createBoundingBox(right);*/
+
 			createBoundingBox(leftBB, left);
 			createBoundingBox(rightBB, right);
 
-			// minimize costs of subtrees to compare and determine optimal split point
+			// minimize costs of subtrees according to surface area heuristic
+			// to compare and determine optimal split point
 			for (int d = 0; d < DEPTH; d++) {
 				// calculate costs
 				float leftCost = calcCost(leftBB, left);
@@ -130,7 +132,6 @@ void BVH::build(Objects * objs, int depth) {
 							(*left).pop_back();
 						}
 					}
-					//leftBB = createBoundingBox(left);
 					createBoundingBox(leftBB, left);
 
 				} else if (rightCost > leftCost) {
@@ -162,16 +163,16 @@ void BVH::build(Objects * objs, int depth) {
 							(*right).pop_back();
 						}
 					}
-					//rightBB = createBoundingBox(right);
 					createBoundingBox(rightBB, right);
 				}
 				midpoint = (upperBound + lowerBound) / 2.0f;
 
 			}
-
+			
 			float leftCost = calcCost(leftBB, left);
 			float rightCost = calcCost(rightBB, right);
 
+			// check for new minimum cost and update
 			if (leftCost + rightCost < minCost) {
 				minCost = leftCost + rightCost;
 				axis = i;
@@ -190,12 +191,14 @@ void BVH::build(Objects * objs, int depth) {
 		}
 		m_axis = axis;
 		m_plane = planePos;
+		//fprintf(stdout, "Axis: %d, plane: %.3f\n", m_axis, m_plane);
 
 		// add nodes according to best splitting plane
 		Objects* left = new Objects();
 		Objects* right = new Objects();
+		//fprintf(stdout, "objs.size: %d\n", objs->size());
 		for (int i = 0; i < objs->size(); i++) {
-			if ((*objs)[i]->center()[axis] < planePos) {
+			if ((*objs)[i]->center()[m_axis] < m_plane) {
 				left->push_back((*objs)[i]);
 			} else {
 				right->push_back((*objs)[i]);
@@ -211,6 +214,17 @@ void BVH::build(Objects * objs, int depth) {
 		m_right->m_box.min = bestRightBox.min;
 		m_right->m_box.max = bestRightBox.max;
 		
+		/*
+		switch (m_axis) {
+		case 0: printf("X"); break;
+		case 1: printf("Y"); break;
+		case 2: printf("Z"); break;
+		}
+		printf(" (%f)\n", m_plane);
+		printf("Left: min/max = (%.3f,%.3f,%.3f / %.3f,%.3f,%.3f), size = %d\n", m_left->m_box.min.x, m_left->m_box.min.y, m_left->m_box.min.z, m_left->m_box.max.x, m_left->m_box.max.y, m_left->m_box.max.z, left->size());
+		printf("Right: min/max = (%.3f,%.3f,%.3f / %.3f,%.3f,%.3f), size = %d\n\n", m_right->m_box.min.x, m_right->m_box.min.y, m_right->m_box.min.z, m_right->m_box.max.x, m_right->m_box.max.y, m_right->m_box.max.z, right->size());
+		*/
+
 		m_left->build(left, depth + 1);
 		if (!m_left->m_leaf) {
 			left->erase(left->begin(), left->end());
@@ -228,6 +242,9 @@ float BVH::calcCost(BoundingBox& box, Objects* objs) {
 	if (objs->size() <= 0) {
 		return 0.0f;
 	} else {
+		//printf("objs->size: %d", objs->size());
+		//printf("\tSA: %f\n", surfaceArea(box));
+
 		// cost = surface area of box * number of objects
 		return surfaceArea(box) * objs->size();
 	}
@@ -246,7 +263,7 @@ void BVH::createBoundingBox(BoundingBox& box, Objects *objs) {
 	if (objs == NULL) return;
 	// create bounding box
 	Vector3 min(infinity);
-	Vector3 max(-infinity);
+	Vector3 max(n_infinity);
 
 	for (int i = 0; i < objs->size(); i++) {
 		Vector3 currMin((*objs)[i]->min());
@@ -267,7 +284,7 @@ bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) con
 	float min = tMin, max = tMax;
 	if (m_box.hit(ray, min, max)) {
 		//fprintf(stdout, "min: %f, tMin: %f, max: %f, tMax: %f\n", min, tMin, max, tMax);
-		return intersectNode(minHit, ray, min, max);
+		return intersectNode(minHit, ray, tMin, tMax);
 	}
 	return false;
 }
@@ -279,57 +296,88 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
     minHit.t = tMax;
 
     HitInfo tempMinHit;
-	//if (m_box.hit(ray, tMin, tMax)) {
-		if (m_leaf) {
-			// intersect objects
-			for (int i = 0; i < m_objects->size(); i++) {
-				if ((*m_objects)[i]->intersect(tempMinHit, ray, tMin, minHit.t)) {
-					if (tempMinHit.t < minHit.t) {
-						minHit = tempMinHit;
-						hit = true;
-					}
+	
+	if (m_leaf) {
+		// intersect objects
+		for (int i = 0; i < m_objects->size(); i++) {
+			if ((*m_objects)[i]->intersect(tempMinHit, ray, tMin, minHit.t)) {
+				if (tempMinHit.t < minHit.t) {
+					minHit = tempMinHit;
+					hit = true;
 				}
 			}
-			return hit;
-		} else {
-			// traverse tree checking nearest node first
-			BVH *nearChild = NULL, *farChild = NULL;
-			if (ray.d[m_axis] > 0) {
-				nearChild = m_left;
-				farChild = m_right;
-			} else {
-				nearChild = m_right;
-				farChild = m_left;
+		}
+		return hit;
+	} else {
+
+		// traverse tree checking nearest node first
+
+		float t1 = infinity;
+		float t2 = infinity;
+		
+		int nearChild = -1; // track near and far nodes using loop counter
+		int farChild = -1;
+
+		// check both children for smallest distance
+		for (int n = 0; n < 2; n++) {
+			float tempMin = n_infinity, tempMax = infinity;
+			const BVH* currChild = n == 0 ? m_left : m_right;
+
+			float dist1, dist2;
+			for (int i = 0; i < 3; i++) { // loop over all axes
+
+				dist1 = (currChild->m_box.min[i] - ray.o[i]) / ray.d[i];
+				dist2 = (currChild->m_box.max[i] - ray.o[i]) / ray.d[i];
+
+				if (dist1 < dist2) {
+					// dist1 (m_box.min) is closer
+					if (dist1 > tempMin) tempMin = dist1;
+					if (dist2 < tempMax) tempMax = dist2;
+				} else {
+					// dist2 (m_box.max) is closer
+					if (dist2 > tempMin) tempMin = dist2;
+					if (dist1 < tempMax) tempMax = dist1;
+				}
 			}
-			
-			float t = m_plane;
-			if (t > tMax) {
-				hit = nearChild->intersect(minHit, ray, tMin, tMax);
-			} else if (t < tMin) {
-				hit = farChild->intersect(minHit, ray, tMin, tMax);
-			} else {
-				bool a = (nearChild->intersect(minHit, ray, tMin, t));
-				bool b = (farChild->intersect(minHit, ray, t, tMax));
-				hit = a || b;
-				
+			if (tempMin > tempMax || tempMin > tMax || tempMax < tMin) continue;
+			// update distances
+			if (t1 > tempMin) {
+				t2 = t1;
+				farChild = nearChild;
+				t1 = tempMin;
+				nearChild = n;
+			} else if (t2 > tempMin) {
+				farChild = n;
+				t2 = tempMin;
 			}
-			return hit;
 		}
 
-	//}
-
+		// recurse on near child first
+		if (nearChild == 0) { // left child is closer
+			if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+				minHit = tempMinHit;
+				hit = true;
+			}
+			//if (farChild != -1) {
+				if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+					minHit = tempMinHit;
+					hit = true;
+				}
+			//}
+		} else if (nearChild == 1) { // right child is closer
+			if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+				minHit = tempMinHit;
+				hit = true;
+			}
+			//if (farChild != -1) {
+				if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+					minHit = tempMinHit;
+					hit = true;
+				}
+			//}
+		} else return false; // miss
+	}
 	return hit;
-    /*for (size_t i = 0; i < m_objects->size(); ++i)
-    {
-        if ((*m_objects)[i]->intersect(tempMinHit, ray, tMin, tMax))
-        {
-            hit = true;
-            if (tempMinHit.t < minHit.t)
-                minHit = tempMinHit;
-        }
-    }
-    
-    return hit;*/
 }
 
 
