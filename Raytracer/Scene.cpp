@@ -4,8 +4,8 @@
 #include "Image.h"
 #include "Console.h"
 
-#define NUM_TRACE_CALLS 6
-
+#define NUM_TRACE_CALLS 3
+#define SAMPLES 10
 #define OPEN_MP 1
 
 #ifdef OPEN_MP
@@ -58,17 +58,25 @@ Scene::raytraceImage(Camera *cam, Image *img)
     {
         for (int i = 0; i < img->width(); ++i)
         {
+			Vector3 finalResult;
 
-            Ray ray = cam->eyeRay(i, j, img->width(), img->height());
-			Vector3 shadeResult;
-            //if (trace(hitInfo, ray))
-			if (trace(ray, 0, shadeResult))
-            {
-                //shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
-                img->setPixel(i, j, shadeResult);
-			} else {
-				img->setPixel(i, j, cam->bgColor());
+			// Sample each pixel multiple times for path tracing
+			for (int k = 0; k < SAMPLES; k++) { 
+				Vector3 shadeResult;
+				Ray ray = cam->eyeRay(i, j, img->width(), img->height());
+
+				//if (trace(hitInfo, ray))
+				if (trace(ray, 0, shadeResult)) {
+					//shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
+					//img->setPixel(i, j, shadeResult);
+					finalResult += shadeResult / (float)SAMPLES;
+				} else {
+					//img->setPixel(i, j, cam->bgColor());
+					finalResult = cam->bgColor();
+					break;
+				}
 			}
+			img->setPixel(i, j, finalResult);
         }
 
         img->drawScanline(j);
@@ -98,7 +106,17 @@ Scene::trace(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const
 bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 	HitInfo hit;
 	if (numCalls < NUM_TRACE_CALLS && trace(hit, ray)) {
-			res = hit.material->shade(ray, hit, *this);
+			res += hit.material->shade(ray, hit, *this);
+
+			// indirect lighting
+			if (hit.material->isDiffuse()) {
+				Ray indirect = ray.randomRay(hit);
+				Vector3 indirectRes;
+				if (trace(indirect, numCalls + 1, indirectRes)) {
+					res += indirectRes * hit.material->getDiffuse() * 0.3;
+				}
+			}
+
 
 			// check reflection
 			if (hit.material->isSpecular()) {

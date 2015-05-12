@@ -381,7 +381,7 @@ void makeCornellBoxScene() {
 
 	// create and place a point light source
 	PointLight * light = new PointLight;
-	light->setPosition(Vector3(3, 5.0, 0));
+	light->setPosition(Vector3(2.75, 5.5 - epsilon, -2.75));
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(200);
 	g_scene->addLight(light);
