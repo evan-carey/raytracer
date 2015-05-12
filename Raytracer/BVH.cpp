@@ -4,7 +4,7 @@
 #include <limits>
 #include <algorithm>
 
-#define DEPTH 32
+#define DEPTH 64
 
 static const float infinity = std::numeric_limits<float>::max();
 static const float n_infinity = std::numeric_limits<float>::min();

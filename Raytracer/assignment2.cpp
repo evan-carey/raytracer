@@ -358,7 +358,37 @@ makeSponzaScene() {
 
 	Material* material = new Lambert(Vector3(1.0f));
 	TriangleMesh * mesh = new TriangleMesh;
-	mesh->load("sponza.obj");
+	mesh->load("res/models/sponza.obj");
+	addMeshTrianglesToScene(mesh, material);
+
+	// let objects do pre-calculations if needed
+	g_scene->preCalc();
+}
+
+void makeCornellBoxScene() {
+	g_camera = new Camera;
+	g_scene = new Scene;
+	g_image = new Image;
+
+	g_image->resize(512, 512);
+
+	// set up the camera
+	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.0f));
+	g_camera->setEye(Vector3(2.75, 2.75, 5.25));
+	g_camera->setLookAt(Vector3(2.75, 2.75, 0));
+	g_camera->setUp(Vector3(0, 1, 0));
+	g_camera->setFOV(55);
+
+	// create and place a point light source
+	PointLight * light = new PointLight;
+	light->setPosition(Vector3(3, 5.0, 0));
+	light->setColor(Vector3(1, 1, 1));
+	light->setWattage(200);
+	g_scene->addLight(light);
+
+	Material* material = new PhongMaterial(Vector3(1.0f));
+	TriangleMesh * mesh = new TriangleMesh;
+	mesh->load("res/models/cornell_box.obj");
 	addMeshTrianglesToScene(mesh, material);
 
 	// let objects do pre-calculations if needed

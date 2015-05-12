@@ -46,6 +46,9 @@ public:
 
 	// create refraction ray
 	Ray refract(const HitInfo& hit) const;
+
+	// create random ray (for path tracing)
+	Ray randomRay(const HitInfo& hit) const;
 };
 
 

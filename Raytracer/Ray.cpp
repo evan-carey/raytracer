@@ -41,3 +41,21 @@ Ray Ray::refract(const HitInfo& hit) const {
 	Vector3 origin = hit.P + (dir * epsilon);
 	return Ray(origin, dir);
 }
+
+Ray Ray::randomRay(const HitInfo& hit) const {
+
+	// Important sampling method
+	float s = (float)rand() / (float)RAND_MAX;
+	float t = (float)rand() / (float)RAND_MAX;
+
+	float u = 2.0f * PI * s;
+	float v = sqrtf(1.0f - t);
+
+	float p_x = v * cos(u);
+	float p_y = sqrtf(t);
+	float p_z = v * sin(u);
+
+	Vector3 dir(p_x, p_y, p_z);
+	Vector3 origin(hit.P + (dir * epsilon));
+	return Ray(origin, dir);
+}
