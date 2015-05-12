@@ -2,6 +2,7 @@
 #define CSE168_RAY_H_INCLUDED
 
 #include "Material.h"
+#include "StatsReporter.h"
 
 //! Contains information about a ray hit with a surface.
 /*!
@@ -32,12 +33,12 @@ public:
 
     Ray() : o(), d(Vector3(0.0f,0.0f,1.0f))
     {
-        // empty
+		StatsReporter::numRays++;
     }
 
     Ray(const Vector3& o, const Vector3& d) : o(o), d(d)
     {
-        // empty
+		StatsReporter::numRays++;
     }
 
 	// create reflection ray

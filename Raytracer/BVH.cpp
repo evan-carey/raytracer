@@ -38,6 +38,8 @@ BVH::~BVH() {
 // construct the bounding volume hierarchy
 void BVH::build(Objects * objs, int depth) {
 
+	StatsReporter::numBVHNodes++;
+
 	// create bounding box
 	if (m_box.min.x == infinity)
 		createBoundingBox(m_box, objs);
@@ -45,10 +47,14 @@ void BVH::build(Objects * objs, int depth) {
 
 	if (objs->size() <= MAX_NUM_OBJECTS || depth >= DEPTH) {
 		// current node is a leaf
+
+		StatsReporter::numBVHLeafNodes++;
+
 		m_leaf = true;
 		m_objects = objs;
-		//fprintf(stdout,"objs.size: %d\n", m_objects->size());
+		
 	} else {
+
 		// split and build recursively
 		m_leaf = false;
 
@@ -280,9 +286,10 @@ void BVH::createBoundingBox(BoundingBox& box, Objects *objs) {
 }
 
 bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const {
-	minHit.t = tMax;
+	//minHit.t = tMax;
 	float min = tMin, max = tMax;
 	if (m_box.hit(ray, min, max)) {
+
 		//fprintf(stdout, "min: %f, tMin: %f, max: %f, tMax: %f\n", min, tMin, max, tMax);
 		return intersectNode(minHit, ray, tMin, tMax);
 	}
@@ -291,6 +298,8 @@ bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) con
 
 
 bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const {
+	
+	StatsReporter::numRayBoxIntersections++;
 
     bool hit = false;
     minHit.t = tMax;
@@ -301,6 +310,9 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 		// intersect objects
 		for (int i = 0; i < m_objects->size(); i++) {
 			if ((*m_objects)[i]->intersect(tempMinHit, ray, tMin, minHit.t)) {
+
+				StatsReporter::numRayTriangleIntersections++;
+
 				if (tempMinHit.t < minHit.t) {
 					minHit = tempMinHit;
 					hit = true;

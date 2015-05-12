@@ -85,6 +85,8 @@ Scene::raytraceImage(Camera *cam, Image *img)
     
     printf("Rendering Progress: 100.000%\n");
     debug("done Raytracing!\n");
+
+	StatsReporter::writeToFile("README.txt");
 }
 
 bool
