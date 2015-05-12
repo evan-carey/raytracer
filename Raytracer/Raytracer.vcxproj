@@ -164,6 +164,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="StatsReporter.h" />
     <ClInclude Include="StoneTexture.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Triangle.h" />

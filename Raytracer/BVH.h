@@ -3,23 +3,15 @@
 
 #include "Miro.h"
 #include "Object.h"
-//#include "BoundingBox.h"
 
 #define MAX_NUM_OBJECTS 8
 
 struct BoundingBox {
 	Vector3 min;
 	Vector3 max;
-
 	bool hit(const Ray& ray, float& tMin, float& tMax) const;
 };
 
-struct BSP_Node {
-	Vector3 min, max;
-	float plane_pos;
-	BSP_Node *left, *right;
-	int axis;
-};
 
 class BVH {
 public:
@@ -31,21 +23,19 @@ public:
 
 	bool intersect(HitInfo& hit, const Ray& ray, float tMin = 0.0f, float tMax = MIRO_TMAX) const;
 
-    bool intersectNode(HitInfo& result, const Ray& ray,
-                   float tMin = 0.0f, float tMax = MIRO_TMAX) const;
+    bool intersectNode(HitInfo& result, const Ray& ray, float tMin = 0.0f, float tMax = MIRO_TMAX) const;
 
-	void createBoundingBox(BoundingBox& box, Objects *objs);
-	float surfaceArea(BoundingBox& box);
 protected:
 	bool m_leaf;
     Objects * m_objects;
 	BVH *m_left, *m_right;
 	BoundingBox m_box;
-	//BSP_Node* node;
 	int m_axis;
 	float m_plane;
 
 private:
+	void createBoundingBox(BoundingBox& box, Objects *objs);
+	float surfaceArea(BoundingBox& box);
 	float calcCost(BoundingBox& box, Objects* objs);
 };
 

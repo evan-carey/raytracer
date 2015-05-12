@@ -35,10 +35,10 @@ BVH::~BVH() {
 	
 }
 
+// construct the bounding volume hierarchy
 void BVH::build(Objects * objs, int depth) {
-    // construct the bounding volume hierarchy
+
 	// create bounding box
-	//m_box = new BoundingBox();
 	if (m_box.min.x == infinity)
 		createBoundingBox(m_box, objs);
 
@@ -103,7 +103,7 @@ void BVH::build(Objects * objs, int depth) {
 					bestRightBox.max = rightBB.max;
 				}
 				// compare subtree costs
-
+				
 				int numObjsMoved = 0;
 				if (leftCost > rightCost) {
 					// left has higher cost ==> move objects from left to right
