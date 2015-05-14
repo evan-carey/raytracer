@@ -12,6 +12,7 @@
 #include "Lambert.h"
 #include "MiroWindow.h"
 
+#include "assignment1.h"
 #include "assignment2.h"
 
 /* Render a Lorenz attractor */
@@ -185,8 +186,9 @@ int
 main(int argc, char*argv[])
 {
     // create a scene
+	makeTeapotScene2();
 	//makeSponzaScene();
-	makeCornellBoxScene();
+	//makeCornellBoxScene();
 
     MiroWindow miro(&argc, argv);
     miro.mainLoop();

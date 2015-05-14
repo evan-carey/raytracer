@@ -5,7 +5,7 @@
 #include "Console.h"
 
 #define NUM_TRACE_CALLS 3
-#define SAMPLES 10
+#define SAMPLES 1
 #define OPEN_MP 1
 
 #ifdef OPEN_MP
@@ -29,27 +29,34 @@ Scene::openGL(Camera *cam)
 }
 
 void
-Scene::preCalc()
-{
+Scene::preCalc() {
+
+	// Pre-calc scene objects
     Objects::iterator it;
-    for (it = m_objects.begin(); it != m_objects.end(); it++)
-    {
+    for (it = m_objects.begin(); it != m_objects.end(); it++) {
         Object* pObject = *it;
         pObject->preCalc();
     }
+
+	// Pre-calc scene lights
     Lights::iterator lit;
-    for (lit = m_lights.begin(); lit != m_lights.end(); lit++)
-    {
+    for (lit = m_lights.begin(); lit != m_lights.end(); lit++) {
         PointLight* pLight = *lit;
         pLight->preCalc();
     }
 
+	// Build BVH
+	clock_t start = std::clock(); // track BVH building time
     m_bvh.build(&m_objects);
+	StatsReporter::calcBVHBuildTime(start);
 }
 
 void
-Scene::raytraceImage(Camera *cam, Image *img) 
-{   
+Scene::raytraceImage(Camera *cam, Image *img) {   
+
+	// track rendering time
+	clock_t start = std::clock();
+
     // loop over all pixels in the image
 #ifdef OPEN_MP
 	#pragma omp parallel for schedule(dynamic)
@@ -91,6 +98,8 @@ Scene::raytraceImage(Camera *cam, Image *img)
 		}
     }
     
+	StatsReporter::calcRenderTime(start);
+
     printf("Rendering Progress: 100.000%\n");
     debug("done Raytracing!\n");
 
@@ -109,11 +118,12 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 			res += hit.material->shade(ray, hit, *this);
 
 			// indirect lighting
+			if (SAMPLES > 1)
 			if (hit.material->isDiffuse()) {
 				Ray indirect = ray.randomRay(hit);
 				Vector3 indirectRes;
 				if (trace(indirect, numCalls + 1, indirectRes)) {
-					res += indirectRes * hit.material->getDiffuse() * 0.3;
+					res += indirectRes * hit.material->getDiffuse() * 0.8;
 				}
 			}
 

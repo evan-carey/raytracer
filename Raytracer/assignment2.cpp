@@ -40,10 +40,10 @@ makeTeapotScene2() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(10, 10, 10));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(700);
+	light->setWattage(2800);
 	g_scene->addLight(light);
 
-	Material* material = new Lambert(Vector3(1.0f));
+	Material* material = new PhongMaterial(Vector3(1.0f));
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
 	addMeshTrianglesToScene(teapot, material);
@@ -383,13 +383,27 @@ void makeCornellBoxScene() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(2.75, 5.5 - epsilon, -2.75));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(200);
+	light->setWattage(150);
 	g_scene->addLight(light);
 
-	Material* material = new PhongMaterial(Vector3(1.0f));
+	Material* whiteDiffuse = new PhongMaterial(Vector3(1.0f));
+	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.0f, 0.0f));
+	Material* greenDiffuse = new PhongMaterial(Vector3(0.0f, 1.0f, 0.0f));
 	TriangleMesh * mesh = new TriangleMesh;
 	mesh->load("res/models/cornell_box.obj");
-	addMeshTrianglesToScene(mesh, material);
+	
+	// add triangles to scene
+	for (int i = 0; i < mesh->numTris(); i++) {
+		Triangle* t = new Triangle;
+		t->setIndex(i);
+		t->setMesh(mesh);
+		switch (i) {
+		case 4: case 5: t->setMaterial(redDiffuse);   break;
+		case 6: case 7: t->setMaterial(greenDiffuse); break;
+		default:        t->setMaterial(whiteDiffuse); break;
+		}
+		g_scene->addObject(t);
+	}
 
 	// let objects do pre-calculations if needed
 	g_scene->preCalc();

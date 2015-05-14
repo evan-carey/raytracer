@@ -4,7 +4,7 @@
 #include <limits>
 #include <algorithm>
 
-#define DEPTH 64
+#define DEPTH 32
 
 static const float infinity = std::numeric_limits<float>::max();
 static const float n_infinity = std::numeric_limits<float>::min();
@@ -92,7 +92,7 @@ void BVH::build(Objects * objs, int depth) {
 
 			// minimize costs of subtrees according to surface area heuristic
 			// to compare and determine optimal split point
-			for (int d = 0; d < DEPTH; d++) {
+			for (int d = 0; d < 6; d++) {
 				// calculate costs
 				float leftCost = calcCost(leftBB, left);
 				float rightCost = calcCost(rightBB, right);
@@ -114,7 +114,7 @@ void BVH::build(Objects * objs, int depth) {
 				if (leftCost > rightCost) {
 					// left has higher cost ==> move objects from left to right
 					upperBound = midpoint;
-
+					midpoint = (upperBound + lowerBound) / 2.0f;
 					for (int j = left->size() - 1; j >= 0; j--) {
 						if ((*left)[j]->center()[i] > midpoint) {
 							numObjsMoved++;
@@ -133,9 +133,10 @@ void BVH::build(Objects * objs, int depth) {
 
 							}
 							// move object to right child
-							(*right).push_back((*left)[j]);
-							std::swap((*left)[j], (*left)[(*left).size() - 1]);
-							(*left).pop_back();
+							right->push_back((*left)[j]);
+							//left->erase(left->begin() + j);
+							std::swap((*left)[j], (*left)[left->size() - 1]);
+							left->pop_back();
 						}
 					}
 					createBoundingBox(leftBB, left);
@@ -143,7 +144,7 @@ void BVH::build(Objects * objs, int depth) {
 				} else if (rightCost > leftCost) {
 					// right has higher cost ==> move objects from right to left
 					lowerBound = midpoint;
-
+					midpoint = (upperBound + lowerBound) / 2.0f;
 					for (int j = right->size() - 1; j >= 0; j--) {
 						if ((*right)[j]->center()[i] < midpoint) {
 							numObjsMoved++;
@@ -163,10 +164,10 @@ void BVH::build(Objects * objs, int depth) {
 
 							}
 							// move object to left child
-							(*left).push_back((*right)[j]);
-							std::swap((*right)[j], (*right)[(*right).size() - 1]);
-							//(*right).erase((*right).begin() + j);
-							(*right).pop_back();
+							left->push_back((*right)[j]);
+							//right->erase(right->begin() + j);
+							std::swap((*right)[j], (*right)[right->size() - 1]);
+							right->pop_back();
 						}
 					}
 					createBoundingBox(rightBB, right);
@@ -321,11 +322,53 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 		}
 		return hit;
 	} else {
+		
 
+		float lt1 = tMin, lt2 = tMax;
+		float rt1 = tMin, rt2 = tMax;
+
+		bool lHit = m_left->m_box.hit(ray, lt1, lt2);
+		bool rHit = m_right->m_box.hit(ray, rt1, rt2);
+
+
+		if (lHit && rHit) { // hit both boxes
+
+			// intersect closer child first
+			if (lt1 < rt1) {
+				if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+					minHit = tempMinHit;
+					hit = true;
+				}
+				if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+					minHit = tempMinHit;
+					hit = true;
+				}
+			} else {
+				if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+					minHit = tempMinHit;
+					hit = true;
+				}
+				if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+					minHit = tempMinHit;
+					hit = true;
+				}
+			}
+		} else if (lHit) { // only hit left box
+			if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+				minHit = tempMinHit;
+				hit = true;
+			}
+		} else if (rHit) { // only hit right box
+			if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
+				minHit = tempMinHit;
+				hit = true;
+			}
+		} else return false; // miss
+
+
+		/*****************************
 		// traverse tree checking nearest node first
-
-		float t1 = infinity;
-		float t2 = infinity;
+		float t1 = infinity; float t2 = infinity;
 		
 		int nearChild = -1; // track near and far nodes using loop counter
 		int farChild = -1;
@@ -353,12 +396,12 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 			}
 			if (tempMin > tempMax || tempMin > tMax || tempMax < tMin) continue;
 			// update distances
-			if (t1 > tempMin) {
+			if (tempMin < t1) {
 				t2 = t1;
 				farChild = nearChild;
 				t1 = tempMin;
 				nearChild = n;
-			} else if (t2 > tempMin) {
+			} else if (tempMin < t2) {
 				farChild = n;
 				t2 = tempMin;
 			}
@@ -370,24 +413,26 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 				minHit = tempMinHit;
 				hit = true;
 			}
-			//if (farChild != -1) {
+			if (farChild != -1) {
 				if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
 					minHit = tempMinHit;
 					hit = true;
 				}
-			//}
+			}
 		} else if (nearChild == 1) { // right child is closer
 			if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
 				minHit = tempMinHit;
 				hit = true;
 			}
-			//if (farChild != -1) {
+			if (farChild != -1) {
 				if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
 					minHit = tempMinHit;
 					hit = true;
 				}
-			//}
+			}
 		} else return false; // miss
+		**********************/
+
 	}
 	return hit;
 }
@@ -408,7 +453,7 @@ bool BoundingBox::hit(const Ray& ray, float& tMin, float& tMax) const {
 	float max = std::min({ std::max(tx1, tx2), std::max(ty1, ty2), std::max(tz1, tz2) });
 
 	//if (min < 0.0f) return false; // inside box
-	if (max < 0.0f) return false; //box behind origin
+	if (max < 0.0f) return false; // box behind origin
 
 	if (max < min || max < tMin || min > tMax) return false;
 
