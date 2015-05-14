@@ -4,7 +4,7 @@
 #include <limits>
 #include <algorithm>
 
-#define DEPTH 32
+#define DEPTH 64
 
 static const float infinity = std::numeric_limits<float>::max();
 static const float n_infinity = std::numeric_limits<float>::min();
@@ -92,7 +92,7 @@ void BVH::build(Objects * objs, int depth) {
 
 			// minimize costs of subtrees according to surface area heuristic
 			// to compare and determine optimal split point
-			for (int d = 0; d < 6; d++) {
+			for (int d = 0; d < 32; d++) {
 				// calculate costs
 				float leftCost = calcCost(leftBB, left);
 				float rightCost = calcCost(rightBB, right);
@@ -323,7 +323,7 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 		return hit;
 	} else {
 		
-
+		
 		float lt1 = tMin, lt2 = tMax;
 		float rt1 = tMin, rt2 = tMax;
 
@@ -364,9 +364,9 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 				hit = true;
 			}
 		} else return false; // miss
+		
 
-
-		/*****************************
+		/************************************
 		// traverse tree checking nearest node first
 		float t1 = infinity; float t2 = infinity;
 		
@@ -431,7 +431,7 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 				}
 			}
 		} else return false; // miss
-		**********************/
+		******************/
 
 	}
 	return hit;

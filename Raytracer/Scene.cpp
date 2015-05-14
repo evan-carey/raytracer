@@ -118,12 +118,13 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 			res += hit.material->shade(ray, hit, *this);
 
 			// indirect lighting
-			if (SAMPLES > 1)
-			if (hit.material->isDiffuse()) {
-				Ray indirect = ray.randomRay(hit);
-				Vector3 indirectRes;
-				if (trace(indirect, numCalls + 1, indirectRes)) {
-					res += indirectRes * hit.material->getDiffuse() * 0.8;
+			if (SAMPLES > 1) {
+				if (hit.material->isDiffuse()) {
+					Ray indirect = ray.randomRay(hit);
+					Vector3 indirectRes;
+					if (trace(indirect, numCalls + 1, indirectRes)) {
+						res += indirectRes * hit.material->getDiffuse() * 0.8;
+					}
 				}
 			}
 

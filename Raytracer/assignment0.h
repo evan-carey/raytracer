@@ -1,0 +1,2 @@
+void makeLorenzScene();
+void makeSpiralScene();

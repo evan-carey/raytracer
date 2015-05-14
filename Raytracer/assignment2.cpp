@@ -89,9 +89,11 @@ makeBunny1Scene() {
 	light->setPosition(Vector3(10, 20, 10));
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(1000);
+	//light->setWattage(2000);
 	g_scene->addLight(light);
 
 	Material* material = new Lambert(Vector3(1.0f));
+	//Material* material = new PhongMaterial(Vector3(1.0f));
 	TriangleMesh * bunny = new TriangleMesh;
 	bunny->load("res/models/bunny.obj");
 	addMeshTrianglesToScene(bunny, material);
@@ -99,9 +101,9 @@ makeBunny1Scene() {
 	// create the floor triangle
 	TriangleMesh * floor = new TriangleMesh;
 	floor->createSingleTriangle();
-	floor->setV1(Vector3(-100, 0, -100));
-	floor->setV2(Vector3(0, 0, 100));
-	floor->setV3(Vector3(100, 0, -100));
+	floor->setV1(Vector3(-100, -1, -100));
+	floor->setV2(Vector3(0, -1, 100));
+	floor->setV3(Vector3(100, -1, -100));
 	floor->setN1(Vector3(0, 1, 0));
 	floor->setN2(Vector3(0, 1, 0));
 	floor->setN3(Vector3(0, 1, 0));
@@ -124,7 +126,7 @@ makeBunny20Scene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(128, 128);
+	g_image->resize(512, 512);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
@@ -142,6 +144,7 @@ makeBunny20Scene() {
 
 	TriangleMesh * mesh;
 	Material* material = new Lambert(Vector3(1.0f));
+	//Material* material = new PhongMaterial(Vector3(1.0f));
 	Matrix4x4 xform;
 	Matrix4x4 xform2;
 	xform2 *= rotate(110, 0, 1, 0);
