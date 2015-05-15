@@ -3,7 +3,7 @@
 #include "Scene.h"
 #include <algorithm>
 
-#define SHADOWS 0
+#define SHADOWS
 
 Lambert::Lambert(const Vector3 & kd, const Vector3 & ka) :
     m_kd(kd), m_ka(ka)

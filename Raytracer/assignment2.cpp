@@ -40,10 +40,11 @@ makeTeapotScene2() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(10, 10, 10));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(2800);
+	light->setWattage(1000);
 	g_scene->addLight(light);
 
-	Material* material = new PhongMaterial(Vector3(1.0f));
+	Material* material = new Lambert(Vector3(1.0f));
+	//Material* material = new PhongMaterial(Vector3(1.0f));
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
 	addMeshTrianglesToScene(teapot, material);

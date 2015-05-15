@@ -75,7 +75,7 @@ void BVH::build(Objects * objs, int depth) {
 			// splitting planes of current axis
 			float lowerBound = m_box.min[i];
 			float upperBound = m_box.max[i];
-			float midpoint = (upperBound + lowerBound) / 2.0f;
+			float midpoint = lowerBound + (upperBound - lowerBound) / 2.0f;
 
 			for (int j = 0; j < objs->size(); j++) {
 				// put objects into left and right buckets based on location
@@ -114,7 +114,7 @@ void BVH::build(Objects * objs, int depth) {
 				if (leftCost > rightCost) {
 					// left has higher cost ==> move objects from left to right
 					upperBound = midpoint;
-					midpoint = (upperBound + lowerBound) / 2.0f;
+					midpoint = lowerBound + (upperBound - lowerBound) / 2.0f;
 					for (int j = left->size() - 1; j >= 0; j--) {
 						if ((*left)[j]->center()[i] > midpoint) {
 							numObjsMoved++;
@@ -144,7 +144,7 @@ void BVH::build(Objects * objs, int depth) {
 				} else if (rightCost > leftCost) {
 					// right has higher cost ==> move objects from right to left
 					lowerBound = midpoint;
-					midpoint = (upperBound + lowerBound) / 2.0f;
+					midpoint = lowerBound + (upperBound - lowerBound) / 2.0f;
 					for (int j = right->size() - 1; j >= 0; j--) {
 						if ((*right)[j]->center()[i] < midpoint) {
 							numObjsMoved++;
@@ -172,7 +172,7 @@ void BVH::build(Objects * objs, int depth) {
 					}
 					createBoundingBox(rightBB, right);
 				}
-				midpoint = (upperBound + lowerBound) / 2.0f;
+				midpoint = lowerBound + (upperBound - lowerBound) / 2.0f;
 
 			}
 			
@@ -364,75 +364,6 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 				hit = true;
 			}
 		} else return false; // miss
-		
-
-		/************************************
-		// traverse tree checking nearest node first
-		float t1 = infinity; float t2 = infinity;
-		
-		int nearChild = -1; // track near and far nodes using loop counter
-		int farChild = -1;
-
-		// check both children for smallest distance
-		for (int n = 0; n < 2; n++) {
-			float tempMin = n_infinity, tempMax = infinity;
-			const BVH* currChild = n == 0 ? m_left : m_right;
-
-			float dist1, dist2;
-			for (int i = 0; i < 3; i++) { // loop over all axes
-
-				dist1 = (currChild->m_box.min[i] - ray.o[i]) / ray.d[i];
-				dist2 = (currChild->m_box.max[i] - ray.o[i]) / ray.d[i];
-
-				if (dist1 < dist2) {
-					// dist1 (m_box.min) is closer
-					if (dist1 > tempMin) tempMin = dist1;
-					if (dist2 < tempMax) tempMax = dist2;
-				} else {
-					// dist2 (m_box.max) is closer
-					if (dist2 > tempMin) tempMin = dist2;
-					if (dist1 < tempMax) tempMax = dist1;
-				}
-			}
-			if (tempMin > tempMax || tempMin > tMax || tempMax < tMin) continue;
-			// update distances
-			if (tempMin < t1) {
-				t2 = t1;
-				farChild = nearChild;
-				t1 = tempMin;
-				nearChild = n;
-			} else if (tempMin < t2) {
-				farChild = n;
-				t2 = tempMin;
-			}
-		}
-
-		// recurse on near child first
-		if (nearChild == 0) { // left child is closer
-			if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
-				minHit = tempMinHit;
-				hit = true;
-			}
-			if (farChild != -1) {
-				if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
-					minHit = tempMinHit;
-					hit = true;
-				}
-			}
-		} else if (nearChild == 1) { // right child is closer
-			if (m_right->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
-				minHit = tempMinHit;
-				hit = true;
-			}
-			if (farChild != -1) {
-				if (m_left->intersectNode(tempMinHit, ray, tMin, minHit.t)) {
-					minHit = tempMinHit;
-					hit = true;
-				}
-			}
-		} else return false; // miss
-		******************/
-
 	}
 	return hit;
 }
@@ -440,24 +371,49 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 
 
 bool BoundingBox::hit(const Ray& ray, float& tMin, float& tMax) const {
-	float tx1 = (min.x - ray.o.x) / ray.d.x;
-	float tx2 = (max.x - ray.o.x) / ray.d.x;
+	
+	float tempMin = n_infinity, tempMax = infinity;
 
-	float ty1 = (min.y - ray.o.y) / ray.d.y;
-	float ty2 = (max.y - ray.o.y) / ray.d.y;
+	float dist1, dist2;
+	for (int i = 0; i < 3; i++) { // check each dimension
+		dist1 = (this->min[i] - ray.o[i]) / ray.d[i];
+		dist2 = (this->max[i] - ray.o[i]) / ray.d[i];
 
-	float tz1 = (min.z - ray.o.z) / ray.d.z;
-	float tz2 = (max.z - ray.o.z) / ray.d.z;
+		if (dist1 < dist2) {
+			// dist1 (m_box.min) is closer
+			if (dist1 > tempMin) tempMin = dist1;
+			if (dist2 < tempMax) tempMax = dist2;
+		} else {
+			// dist2 (m_box.max) is closer
+			if (dist2 > tempMin) tempMin = dist2;
+			if (dist1 < tempMax) tempMax = dist1;
+		}
+	}
+	if (tempMin > tempMax || tempMin > tMax || tempMax < tMin) 
+		return false;
 
-	float min = std::max({ std::min(tx1, tx2), std::min(ty1, ty2), std::min(tz1, tz2) });
-	float max = std::min({ std::max(tx1, tx2), std::max(ty1, ty2), std::max(tz1, tz2) });
-
-	//if (min < 0.0f) return false; // inside box
-	if (max < 0.0f) return false; // box behind origin
-
-	if (max < min || max < tMin || min > tMax) return false;
-
-	tMin = min;
-	tMax = max;
 	return true;
+	
+
+
+	//float tx1 = (min.x - ray.o.x) / ray.d.x;
+	//float tx2 = (max.x - ray.o.x) / ray.d.x;
+
+	//float ty1 = (min.y - ray.o.y) / ray.d.y;
+	//float ty2 = (max.y - ray.o.y) / ray.d.y;
+
+	//float tz1 = (min.z - ray.o.z) / ray.d.z;
+	//float tz2 = (max.z - ray.o.z) / ray.d.z;
+
+	//float min = std::max({ std::min(tx1, tx2), std::min(ty1, ty2), std::min(tz1, tz2) });
+	//float max = std::min({ std::max(tx1, tx2), std::max(ty1, ty2), std::max(tz1, tz2) });
+
+	////if (min < 0.0f) return false; // inside box
+	//if (max < 0.0f) return false; // box behind origin
+
+	//if (max < min || max < tMin || min > tMax) return false;
+
+	//tMin = min;
+	//tMax = max;
+	//return true;
 }
