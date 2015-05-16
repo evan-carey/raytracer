@@ -385,14 +385,15 @@ void makeCornellBoxScene() {
 
 	// create and place a point light source
 	PointLight * light = new PointLight;
-	light->setPosition(Vector3(2.75, 5.5 - epsilon, -2.75));
+	light->setPosition(Vector3(2.75, 5.49, -2.75));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(150);
+	light->setWattage(30);
 	g_scene->addLight(light);
 
-	Material* whiteDiffuse = new PhongMaterial(Vector3(1.0f));
-	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.0f, 0.0f));
-	Material* greenDiffuse = new PhongMaterial(Vector3(0.0f, 1.0f, 0.0f));
+
+	Material* whiteDiffuse = new Lambert(Vector3(1.0f));
+	Material* redDiffuse = new Lambert(Vector3(1.0f, 0.0f, 0.0f));
+	Material* greenDiffuse = new Lambert(Vector3(0.0f, 1.0f, 0.0f));
 	TriangleMesh * mesh = new TriangleMesh;
 	mesh->load("res/models/cornell_box.obj");
 	

@@ -59,3 +59,26 @@ Ray Ray::randomRay(const HitInfo& hit) const {
 	Vector3 origin(hit.P + (dir * epsilon));
 	return Ray(origin, dir);
 }
+
+Ray Ray::indirectRay(const HitInfo& hit) const {
+
+	float theta = asin(sqrt((float)rand() / (float)RAND_MAX));
+	float phi = 2.0f * PI * ((float)rand() / (float)RAND_MAX);
+
+	Vector3 t_1 = cross(Vector3(0, 0, 1), hit.N);
+	if (t_1.length() < epsilon) { 
+		// if cross product equals 0, hit.N is parallel to the z-axis --> use y-axis instead
+		t_1 = cross(Vector3(0, 1, 0), hit.N);
+	}
+	Vector3 t_2 = cross(t_1, hit.N);
+
+	// convert spherical coordinates to vector
+	Vector3 dir = cos(phi) * sin(theta) * t_1 +
+		sin(phi) * sin(theta) * t_2 +
+		cos(theta) * hit.N;
+
+	dir.normalize();
+
+	Vector3 origin = hit.P + (dir * epsilon);
+	return Ray(origin, dir);
+}

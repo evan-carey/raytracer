@@ -4,25 +4,41 @@
 #include <vector>
 #include "Vector3.h"
 
-class PointLight
-{
+class PointLight {
 public:
-    void setPosition(const Vector3& v)  {m_position = v;}
-    void setColor(const Vector3& v)     {m_color = v;}
-    void setWattage(float f)            {m_wattage = f;}
-    
-    float wattage() const               {return m_wattage;}
-    const Vector3 & color() const       {return m_color;}
-    const Vector3& position() const     {return m_position;}
+	PointLight() {}
+	virtual ~PointLight() {}
 
-    void preCalc() {} // use this if you need to
+	void setPosition(const Vector3& v) { m_position = v; }
+	void setColor(const Vector3& v) { m_color = v; }
+	void setWattage(float f) { m_wattage = f; }
+
+	float wattage() const { return m_wattage; }
+	const Vector3 & color() const { return m_color; }
+	const Vector3& position() const { return m_position; }
+
+	void preCalc() {} // use this if you need to
 
 protected:
-    Vector3 m_position;
-    Vector3 m_color;
-    float m_wattage;
+	Vector3 m_position;
+	Vector3 m_color;
+	float m_wattage;
+    
 };
 
 typedef std::vector<PointLight*> Lights;
+
+
+class SquareLight : public PointLight {
+public:
+	void setNormal(const Vector3& n) { m_normal = n; }
+	void setSize(float s) { m_size = s; }
+
+	const Vector3& normal() { return m_normal; }
+	float size() { return m_size; }
+protected:
+	Vector3 m_normal;
+	float m_size;
+};
 
 #endif // CSE168_POINTLIGHT_H_INCLUDED

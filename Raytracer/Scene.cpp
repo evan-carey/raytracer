@@ -4,9 +4,17 @@
 #include "Image.h"
 #include "Console.h"
 
-#define NUM_TRACE_CALLS 3
-#define SAMPLES 1
-#define OPEN_MP 1
+#define NUM_TRACE_CALLS 8
+#define OPEN_MP
+
+#define USE_PATH_TRACING  // uncomment to use Monte Carlo path tracing
+#ifdef USE_PATH_TRACING
+    #define SAMPLES 10
+
+    //#define USE_RUSSIAN_ROULETTE // uncomment to use Russian Roulette
+    #define CHANCE_TO_TERMINATE 0.5f
+#endif
+
 
 #ifdef OPEN_MP
 #include <omp.h>
@@ -57,6 +65,8 @@ Scene::raytraceImage(Camera *cam, Image *img) {
 	// track rendering time
 	clock_t start = std::clock();
 
+
+
     // loop over all pixels in the image
 #ifdef OPEN_MP
 	#pragma omp parallel for schedule(dynamic)
@@ -65,24 +75,37 @@ Scene::raytraceImage(Camera *cam, Image *img) {
     {
         for (int i = 0; i < img->width(); ++i)
         {
-			Vector3 finalResult;
+			Vector3 finalResult(0.0f);
 
+#ifdef USE_PATH_TRACING
 			// Sample each pixel multiple times for path tracing
-			for (int k = 0; k < SAMPLES; k++) { 
-				Vector3 shadeResult;
-				Ray ray = cam->eyeRay(i, j, img->width(), img->height());
-
+			for (int k = 0; k < SAMPLES; k++) 
+#endif
+			{ 
+				Vector3 shadeResult(0.0f);
+				Ray ray;
+#ifdef USE_PATH_TRACING
+				// create ray through random point in pixel (i,j)
+				float delta_i = ((float)rand() / (float)RAND_MAX) - 0.5f; // rand in range [-0.5 .. 0.5]
+				float delta_j = ((float)rand() / (float)RAND_MAX) - 0.5f;
+				ray = cam->eyeRay(i + delta_i, j + delta_j, img->width(), img->height());
+#else
+				ray = cam->eyeRay(i, j, img->width(), img->height());
+#endif
 				//if (trace(hitInfo, ray))
 				if (trace(ray, 0, shadeResult)) {
 					//shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
 					//img->setPixel(i, j, shadeResult);
-					finalResult += shadeResult / (float)SAMPLES;
+					finalResult += shadeResult;
 				} else {
 					//img->setPixel(i, j, cam->bgColor());
 					finalResult = cam->bgColor();
 					break;
 				}
 			}
+#ifdef USE_PATH_TRACING
+			finalResult /= (float)SAMPLES;
+#endif
 			img->setPixel(i, j, finalResult);
         }
 
@@ -113,21 +136,32 @@ Scene::trace(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const
 }
 
 bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
+	res = Vector3(0.0f);
 	HitInfo hit;
-	if (numCalls < NUM_TRACE_CALLS && trace(hit, ray)) {
-			res += hit.material->shade(ray, hit, *this);
+	if (numCalls < NUM_TRACE_CALLS) {
+		if (trace(hit, ray)) {
 
-			// indirect lighting
-			if (SAMPLES > 1) {
-				if (hit.material->isDiffuse()) {
-					Ray indirect = ray.randomRay(hit);
+#ifndef USE_RUSSIAN_ROULETTE
+			res = hit.material->shade(ray, hit, *this);
+#endif
+
+#ifdef USE_PATH_TRACING
+			// indirect diffuse lighting
+			if (hit.material->isDiffuse()) {
+#ifdef USE_RUSSIAN_ROULETTE
+				if ((float)rand()/(float)RAND_MAX < CHANCE_TO_TERMINATE) {
+					res = 2.0f * hit.material->shade(ray, hit, *this);
+				} else 
+#endif // USE_RUSSIAN_ROULETTE
+				{
+					Ray indirect = ray.indirectRay(hit);
 					Vector3 indirectRes;
 					if (trace(indirect, numCalls + 1, indirectRes)) {
-						res += indirectRes * hit.material->getDiffuse() * 0.8;
+						res += indirectRes * hit.material->getDiffuse() * 0.8f;
 					}
 				}
 			}
-
+#endif // USE_PATH_TRACING
 
 			// check reflection
 			if (hit.material->isSpecular()) {
@@ -148,7 +182,11 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 					res += refractionRes * hit.material->getTransparency();
 				}
 			}
-		return true;
+			return true;
+		} else {
+			res = g_camera->bgColor();
+			return true;
+		}
 	}
 	return false;
 }

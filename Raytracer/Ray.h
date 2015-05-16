@@ -47,8 +47,11 @@ public:
 	// create refraction ray
 	Ray refract(const HitInfo& hit) const;
 
-	// create random ray (for path tracing)
+	// create random ray using important sampling
 	Ray randomRay(const HitInfo& hit) const;
+
+	// create random indirect diffuse lighting ray (for Monte Carlo path tracing)
+	Ray indirectRay(const HitInfo& hit) const;
 };
 
 

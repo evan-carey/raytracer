@@ -11,9 +11,9 @@ class StatsReporter {
 public:
 	static int numBVHNodes;
 	static int numBVHLeafNodes;
-	static int numRays;
-	static int numRayBoxIntersections;
-	static int numRayTriangleIntersections;
+	static unsigned long numRays;
+	static unsigned long numRayBoxIntersections;
+	static unsigned long numRayTriangleIntersections;
 	static double BVHBuildTime;
 	static double renderTime;
 
@@ -29,9 +29,9 @@ public:
 			fprintf(file, "Total BVH nodes: %d\n", numBVHNodes);
 			fprintf(file, "Total BVH leaf nodes: %d\n", numBVHLeafNodes);
 			fprintf(file, "BVH build time: %.3f seconds\n", BVHBuildTime);
-			fprintf(file, "Total number of rays: %d\n", numRays);
-			fprintf(file, "Ray-box intersections: %d\n", numRayBoxIntersections);
-			fprintf(file, "Ray-triangle intersections: %d\n", numRayTriangleIntersections);
+			fprintf(file, "Total number of rays: %lu\n", numRays);
+			fprintf(file, "Ray-box intersections: %lu\n", numRayBoxIntersections);
+			fprintf(file, "Ray-triangle intersections: %lu\n", numRayTriangleIntersections);
 			fclose(file);
 		}
 		print();
@@ -46,9 +46,9 @@ public:
 		fprintf(stdout, "Total BVH nodes: %d\n", numBVHNodes);
 		fprintf(stdout, "Total BVH leaf nodes: %d\n", numBVHLeafNodes);
 		fprintf(stdout, "BVH build time: %.3f\n", BVHBuildTime);
-		fprintf(stdout, "Total number of rays: %d\n", numRays);
-		fprintf(stdout, "Ray-box intersections: %d\n", numRayBoxIntersections);
-		fprintf(stdout, "Ray-triangle intersections: %d\n\n\n", numRayTriangleIntersections);
+		fprintf(stdout, "Total number of rays: %lu\n", numRays);
+		fprintf(stdout, "Ray-box intersections: %lu\n", numRayBoxIntersections);
+		fprintf(stdout, "Ray-triangle intersections: %lu\n\n\n", numRayTriangleIntersections);
 	}
 
 	static void calcBVHBuildTime(clock_t startTime) {

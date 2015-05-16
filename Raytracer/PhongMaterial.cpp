@@ -3,7 +3,7 @@
 #include "Scene.h"
 #include <algorithm>
 
-
+#define SHADOWS
 
 PhongMaterial::PhongMaterial(const Vector3& kd, const Vector3& ks, const Vector3& kt, const float shine, const float ri) {
 
@@ -50,24 +50,33 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 
 		Vector3 l = pLight->position() - hit.P;
 
+		// the inverse-squared falloff
+		float falloff = l.length2();
+
+		// normalize the light direction
+		l /= sqrt(falloff);
+
+#ifdef SHADOWS
 		// check for shadow
-		Ray shadow(hit.P + (l.normalized() * epsilon), l);
+		Ray shadow(hit.P + (l * epsilon), l);
 		HitInfo shadowHit;
 		// if theree's an object between hitpoint and light source, don't shade it
-		if (scene.trace(shadowHit, shadow, 0.0f, l.length())) {
-			if (!shadowHit.material->isTransparent()) {
+		if (scene.trace(shadowHit, shadow, 0.0f, sqrt(falloff))) {
+			/*if (!shadowHit.material->isTransparent()) {
 				continue;
 			}
 			if (dot(shadowHit.N, l) < 0.0f) {
 				continue;
-			}
+			}*/
+			continue;
 		}
+#endif
 
 		// the inverse-squared falloff 
-		float falloff = 1.0f / (4.0f * PI * l.length2());
+		falloff = 1.0f / (4.0f * PI * falloff);
 
 		// normalize the light direction
-		l.normalize();
+		//l.normalize();
 
 		// get the diffuse component
 		float nDotL = dot(hit.N, l);
