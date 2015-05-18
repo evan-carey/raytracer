@@ -42,6 +42,7 @@ Ray Ray::refract(const HitInfo& hit) const {
 	return Ray(origin, dir);
 }
 
+/********************************
 Ray Ray::randomRay(const HitInfo& hit) const {
 
 	// Important sampling method
@@ -59,6 +60,7 @@ Ray Ray::randomRay(const HitInfo& hit) const {
 	Vector3 origin(hit.P + (dir * epsilon));
 	return Ray(origin, dir);
 }
+**********************************/
 
 Ray Ray::indirectRay(const HitInfo& hit) const {
 

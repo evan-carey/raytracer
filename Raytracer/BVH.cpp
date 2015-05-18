@@ -5,8 +5,8 @@
 #include <algorithm>
 
 #define MAX_NUM_OBJECTS 8 // maximum number of objects in each leaf node
-#define MAX_TREE_DEPTH 32 // maximum depth of BVH tree
-#define NUM_SPLITS 32     // number of checks to find best splitting plane for each axis
+#define MAX_TREE_DEPTH 64 // maximum depth of BVH tree
+#define NUM_SPLITS 8      // number of checks to find best splitting plane for each axis
                           // (higher number generally results in longer BVH build time, 
                           // but shorter render time)
 
@@ -113,15 +113,13 @@ void BVH::build(Objects * objs, int depth) {
 					bestRightBox.max = rightBB.max;
 				}
 				// compare subtree costs
-				
-				int numObjsMoved = 0;
+
 				if (leftCost > rightCost) {
 					// left has higher cost ==> move objects from left to right
 					upperBound = midpoint;
 					midpoint = lowerBound + (upperBound - lowerBound) / 2.0f;
 					for (int j = left->size() - 1; j >= 0; j--) {
 						if ((*left)[j]->center()[i] > midpoint) {
-							numObjsMoved++;
 
 							// get bounding box of object being moved 
 							// (might have to update right's bounding box)
@@ -151,7 +149,6 @@ void BVH::build(Objects * objs, int depth) {
 					midpoint = lowerBound + (upperBound - lowerBound) / 2.0f;
 					for (int j = right->size() - 1; j >= 0; j--) {
 						if ((*right)[j]->center()[i] < midpoint) {
-							numObjsMoved++;
 
 							// get bounding box of object being moved 
 							// (might have to update left's bounding box)
@@ -202,12 +199,10 @@ void BVH::build(Objects * objs, int depth) {
 		}
 		m_axis = axis;
 		m_plane = planePos;
-		//fprintf(stdout, "Axis: %d, plane: %.3f\n", m_axis, m_plane);
 
 		// add nodes according to best splitting plane
 		Objects* left = new Objects();
 		Objects* right = new Objects();
-		//fprintf(stdout, "objs.size: %d\n", objs->size());
 		for (int i = 0; i < objs->size(); i++) {
 			if ((*objs)[i]->center()[m_axis] < m_plane) {
 				left->push_back((*objs)[i]);
@@ -225,16 +220,6 @@ void BVH::build(Objects * objs, int depth) {
 		m_right->m_box.min = bestRightBox.min;
 		m_right->m_box.max = bestRightBox.max;
 		
-		/*
-		switch (m_axis) {
-		case 0: printf("X"); break;
-		case 1: printf("Y"); break;
-		case 2: printf("Z"); break;
-		}
-		printf(" (%f)\n", m_plane);
-		printf("Left: min/max = (%.3f,%.3f,%.3f / %.3f,%.3f,%.3f), size = %d\n", m_left->m_box.min.x, m_left->m_box.min.y, m_left->m_box.min.z, m_left->m_box.max.x, m_left->m_box.max.y, m_left->m_box.max.z, left->size());
-		printf("Right: min/max = (%.3f,%.3f,%.3f / %.3f,%.3f,%.3f), size = %d\n\n", m_right->m_box.min.x, m_right->m_box.min.y, m_right->m_box.min.z, m_right->m_box.max.x, m_right->m_box.max.y, m_right->m_box.max.z, right->size());
-		*/
 
 		m_left->build(left, depth + 1);
 		if (!m_left->m_leaf) {
@@ -253,9 +238,6 @@ float BVH::calcCost(BoundingBox& box, Objects* objs) {
 	if (objs->size() <= 0) {
 		return 0.0f;
 	} else {
-		//printf("objs->size: %d", objs->size());
-		//printf("\tSA: %f\n", surfaceArea(box));
-
 		// cost = surface area of box * number of objects
 		return surfaceArea(box) * objs->size();
 	}
@@ -291,11 +273,8 @@ void BVH::createBoundingBox(BoundingBox& box, Objects *objs) {
 }
 
 bool BVH::intersect(HitInfo& minHit, const Ray& ray, float tMin, float tMax) const {
-	//minHit.t = tMax;
-	float min = tMin, max = tMax;
-	if (m_box.hit(ray, min, max)) {
 
-		//fprintf(stdout, "min: %f, tMin: %f, max: %f, tMax: %f\n", min, tMin, max, tMax);
+	if (m_box.hit(ray, tMin, tMax)) {
 		return intersectNode(minHit, ray, tMin, tMax);
 	}
 	return false;
@@ -374,7 +353,7 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 
 
 
-bool BoundingBox::hit(const Ray& ray, float& tMin, float& tMax) const {
+bool BoundingBox::hit(const Ray& ray, float tMin, float tMax) const {
 	
 	float tempMin = float_min, tempMax = float_max;
 
@@ -397,27 +376,4 @@ bool BoundingBox::hit(const Ray& ray, float& tMin, float& tMax) const {
 		return false;
 
 	return true;
-	
-
-
-	//float tx1 = (min.x - ray.o.x) / ray.d.x;
-	//float tx2 = (max.x - ray.o.x) / ray.d.x;
-
-	//float ty1 = (min.y - ray.o.y) / ray.d.y;
-	//float ty2 = (max.y - ray.o.y) / ray.d.y;
-
-	//float tz1 = (min.z - ray.o.z) / ray.d.z;
-	//float tz2 = (max.z - ray.o.z) / ray.d.z;
-
-	//float min = std::max({ std::min(tx1, tx2), std::min(ty1, ty2), std::min(tz1, tz2) });
-	//float max = std::min({ std::max(tx1, tx2), std::max(ty1, ty2), std::max(tz1, tz2) });
-
-	////if (min < 0.0f) return false; // inside box
-	//if (max < 0.0f) return false; // box behind origin
-
-	//if (max < min || max < tMin || min > tMax) return false;
-
-	//tMin = min;
-	//tMax = max;
-	//return true;
 }

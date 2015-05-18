@@ -8,7 +8,7 @@
 struct BoundingBox {
 	Vector3 min;
 	Vector3 max;
-	bool hit(const Ray& ray, float& tMin, float& tMax) const;
+	bool hit(const Ray& ray, float tMin, float tMax) const;
 };
 
 
