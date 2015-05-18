@@ -40,7 +40,7 @@ makeTeapotScene2() {
 	PointLight * light = new PointLight;
 	light->setPosition(Vector3(10, 10, 10));
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(1000);
+	light->setWattage(700);
 	g_scene->addLight(light);
 
 	Material* material = new Lambert(Vector3(1.0f));
@@ -102,9 +102,9 @@ makeBunny1Scene() {
 	// create the floor triangle
 	TriangleMesh * floor = new TriangleMesh;
 	floor->createSingleTriangle();
-	floor->setV1(Vector3(-100, -1, -100));
-	floor->setV2(Vector3(0, -1, 100));
-	floor->setV3(Vector3(100, -1, -100));
+	floor->setV1(Vector3(-100, 0, -100));
+	floor->setV2(Vector3(0, 0, 100));
+	floor->setV3(Vector3(100, 0, -100));
 	floor->setN1(Vector3(0, 1, 0));
 	floor->setN2(Vector3(0, 1, 0));
 	floor->setN3(Vector3(0, 1, 0));

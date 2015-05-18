@@ -42,6 +42,9 @@ public:
     inline const Vector3 & bgColor() const  {return m_bgColor;}
 
     Ray eyeRay(int x, int y, int imageWidth, int imageHeight);
+
+	// shoot a ray through a random point in pixel (x,y)
+	Ray randomEyeRay(int x, int y, int imageWidth, int imageHeight);
     
     void drawGL();
 

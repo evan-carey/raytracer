@@ -4,7 +4,6 @@
 #include "Miro.h"
 #include "Object.h"
 
-#define MAX_NUM_OBJECTS 8
 
 struct BoundingBox {
 	Vector3 min;

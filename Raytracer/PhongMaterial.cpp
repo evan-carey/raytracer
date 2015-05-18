@@ -62,12 +62,12 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		HitInfo shadowHit;
 		// if theree's an object between hitpoint and light source, don't shade it
 		if (scene.trace(shadowHit, shadow, 0.0f, sqrt(falloff))) {
-			/*if (!shadowHit.material->isTransparent()) {
+			if (!shadowHit.material->isTransparent()) {
 				continue;
 			}
 			if (dot(shadowHit.N, l) < 0.0f) {
 				continue;
-			}*/
+			}
 			continue;
 		}
 #endif

@@ -4,14 +4,18 @@
 #include <limits>
 #include <algorithm>
 
-#define DEPTH 64
+#define MAX_NUM_OBJECTS 8 // maximum number of objects in each leaf node
+#define MAX_TREE_DEPTH 32 // maximum depth of BVH tree
+#define NUM_SPLITS 32     // number of checks to find best splitting plane for each axis
+                          // (higher number generally results in longer BVH build time, 
+                          // but shorter render time)
 
-static const float infinity = std::numeric_limits<float>::max();
-static const float n_infinity = std::numeric_limits<float>::min();
+static const float float_max = std::numeric_limits<float>::max();
+static const float float_min = std::numeric_limits<float>::min();
 
 BVH::BVH() {
-	m_box.min = Vector3(infinity);
-	m_box.max = Vector3(n_infinity);
+	m_box.min = Vector3(float_max);
+	m_box.max = Vector3(float_min);
 }
 
 BVH::BVH(Objects* objs) {
@@ -41,11 +45,11 @@ void BVH::build(Objects * objs, int depth) {
 	StatsReporter::numBVHNodes++;
 
 	// create bounding box
-	if (m_box.min.x == infinity)
+	if (m_box.min.x == float_max)
 		createBoundingBox(m_box, objs);
 
 
-	if (objs->size() <= MAX_NUM_OBJECTS || depth >= DEPTH) {
+	if (objs->size() <= MAX_NUM_OBJECTS || depth >= MAX_TREE_DEPTH) {
 		// current node is a leaf
 
 		StatsReporter::numBVHLeafNodes++;
@@ -59,7 +63,7 @@ void BVH::build(Objects * objs, int depth) {
 		m_leaf = false;
 
 		// find best splitting plane
-		float minCost = infinity; // stores the cost of the best split found
+		float minCost = float_max; // stores the cost of the best split found
 		float planePos; // stores position of the best splitting plane
 		int axis = 0; // stores axis of splitting plane (X=0,Y=1,Z=2)
 
@@ -92,7 +96,7 @@ void BVH::build(Objects * objs, int depth) {
 
 			// minimize costs of subtrees according to surface area heuristic
 			// to compare and determine optimal split point
-			for (int d = 0; d < 32; d++) {
+			for (int d = 0; d < NUM_SPLITS; d++) {
 				// calculate costs
 				float leftCost = calcCost(leftBB, left);
 				float rightCost = calcCost(rightBB, right);
@@ -269,8 +273,8 @@ float BVH::surfaceArea(BoundingBox& box) {
 void BVH::createBoundingBox(BoundingBox& box, Objects *objs) {
 	if (objs == NULL) return;
 	// create bounding box
-	Vector3 min(infinity);
-	Vector3 max(n_infinity);
+	Vector3 min(float_max);
+	Vector3 max(float_min);
 
 	for (int i = 0; i < objs->size(); i++) {
 		Vector3 currMin((*objs)[i]->min());
@@ -372,7 +376,7 @@ bool BVH::intersectNode(HitInfo& minHit, const Ray& ray, float tMin, float tMax)
 
 bool BoundingBox::hit(const Ray& ray, float& tMin, float& tMax) const {
 	
-	float tempMin = n_infinity, tempMax = infinity;
+	float tempMin = float_min, tempMax = float_max;
 
 	float dist1, dist2;
 	for (int i = 0; i < 3; i++) { // check each dimension

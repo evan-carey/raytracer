@@ -90,4 +90,8 @@ f 27 23 28
 f 25 26 28
 f 26 27 28
 
+# added faces to remove square hole in box ceiling
+#f 9 10 11
+#f 11 10 12
+
 #	             End of file

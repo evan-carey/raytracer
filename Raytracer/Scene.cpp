@@ -4,7 +4,7 @@
 #include "Image.h"
 #include "Console.h"
 
-#define NUM_TRACE_CALLS 8
+#define NUM_TRACE_CALLS 32
 #define OPEN_MP
 
 #define USE_PATH_TRACING  // uncomment to use Monte Carlo path tracing
@@ -86,9 +86,7 @@ Scene::raytraceImage(Camera *cam, Image *img) {
 				Ray ray;
 #ifdef USE_PATH_TRACING
 				// create ray through random point in pixel (i,j)
-				float delta_i = ((float)rand() / (float)RAND_MAX) - 0.5f; // rand in range [-0.5 .. 0.5]
-				float delta_j = ((float)rand() / (float)RAND_MAX) - 0.5f;
-				ray = cam->eyeRay(i + delta_i, j + delta_j, img->width(), img->height());
+				ray = cam->randomEyeRay(i, j, img->width(), img->height());
 #else
 				ray = cam->eyeRay(i, j, img->width(), img->height());
 #endif
@@ -99,8 +97,8 @@ Scene::raytraceImage(Camera *cam, Image *img) {
 					finalResult += shadeResult;
 				} else {
 					//img->setPixel(i, j, cam->bgColor());
-					finalResult = cam->bgColor();
-					break;
+					//finalResult = cam->bgColor();
+					//break;
 				}
 			}
 #ifdef USE_PATH_TRACING
@@ -157,7 +155,7 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 					Ray indirect = ray.indirectRay(hit);
 					Vector3 indirectRes;
 					if (trace(indirect, numCalls + 1, indirectRes)) {
-						res += indirectRes * hit.material->getDiffuse() * 0.8f;
+						res += indirectRes * hit.material->getDiffuse() * 0.7f;
 					}
 				}
 			}

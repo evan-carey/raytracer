@@ -45,7 +45,7 @@ public:
 		fprintf(stdout, "Total rendering time: %.3f seconds\n", renderTime);
 		fprintf(stdout, "Total BVH nodes: %d\n", numBVHNodes);
 		fprintf(stdout, "Total BVH leaf nodes: %d\n", numBVHLeafNodes);
-		fprintf(stdout, "BVH build time: %.3f\n", BVHBuildTime);
+		fprintf(stdout, "BVH build time: %.3f seconds\n", BVHBuildTime);
 		fprintf(stdout, "Total number of rays: %lu\n", numRays);
 		fprintf(stdout, "Ray-box intersections: %lu\n", numRayBoxIntersections);
 		fprintf(stdout, "Ray-triangle intersections: %lu\n\n\n", numRayTriangleIntersections);
