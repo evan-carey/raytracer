@@ -1,0 +1,193 @@
+#include "assignment3.h"
+#include <math.h>
+#include "Miro.h"
+#include "Scene.h"
+#include "Camera.h"
+#include "Image.h"
+
+#include "PointLight.h"
+#include "TriangleMesh.h"
+#include "Triangle.h"
+#include "Lambert.h"
+
+#include "PhongMaterial.h"
+#include "StoneTexture.h"
+
+// local helper function declarations
+namespace {
+	void addMeshTrianglesToScene(TriangleMesh * mesh, Material * material);
+	inline Matrix4x4 translate(float x, float y, float z);
+	inline Matrix4x4 scale(float x, float y, float z);
+	inline Matrix4x4 rotate(float angle, float x, float y, float z);
+} // namespace
+
+void makeFinalScene() {
+	g_camera = new Camera;
+	g_scene = new Scene;
+	g_image = new Image;
+
+	g_image->resize(256, 256);
+
+	// set up the camera
+	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.0f));
+	g_camera->setEye(Vector3(2.75, 2.75, 5.25));
+	g_camera->setLookAt(Vector3(2.75, 2.75, 0));
+	g_camera->setUp(Vector3(0, 1, 0));
+	g_camera->setFOV(55);
+
+	// create and place a point light source
+	//SphereLight * light = new SphereLight;
+	PointLight* light = new PointLight;
+	light->setPosition(Vector3(2.75, 5.49, -2.75));
+	//light->setRadius(1.5f);
+	light->setColor(Vector3(1, 1, 1));
+	light->setWattage(40);
+	g_scene->addLight(light);
+
+
+	Material* whiteDiffuse = new Lambert(Vector3(1.0f));
+	Material* redDiffuse = new Lambert(Vector3(1.0f, 0.0f, 0.0f));
+	Material* greenDiffuse = new Lambert(Vector3(0.0f, 1.0f, 0.0f));
+	TriangleMesh * mesh = new TriangleMesh;
+	mesh->load("res/models/cornell_box.obj");
+
+	// add triangles to scene
+	for (int i = 0; i < mesh->numTris(); i++) {
+		Triangle* t = new Triangle;
+		t->setIndex(i);
+		t->setMesh(mesh);
+		switch (i) {
+		case 4: case 5: t->setMaterial(redDiffuse);   break;
+		case 6: case 7: t->setMaterial(greenDiffuse); break;
+		default:        t->setMaterial(whiteDiffuse); break;
+		}
+		g_scene->addObject(t);
+	}
+
+	// let objects do pre-calculations if needed
+	g_scene->preCalc();
+}
+
+void makeFinalScene2() {
+	g_camera = new Camera;
+	g_scene = new Scene;
+	g_image = new Image;
+
+	g_image->resize(512, 512);
+
+	// set up the camera
+	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
+	g_camera->setEye(Vector3(0, 4, 6));
+	g_camera->setLookAt(Vector3(0, 0, 0));
+	g_camera->setUp(Vector3(0, 1, 0));
+	g_camera->setFOV(45);
+
+	// create and place a point light source
+	//SphereLight * light = new SphereLight;
+	PointLight* light = new PointLight;
+	light->setPosition(Vector3(10, 9, 10));
+	//light->setRadius(5.0f);
+	light->setColor(Vector3(1, 1, 1));
+	light->setWattage(2100);
+	g_scene->addLight(light);
+
+
+	Material* material = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.2f);
+	//Material* material = new Lambert(1.0f);
+	//Material* material = new PhongMaterial(Vector3(1.0f));
+	TriangleMesh * mesh = new TriangleMesh;
+	Matrix4x4 xform;
+	xform.setIdentity();
+	//xform *= scale(0.005, 0.005, 0.005);
+	mesh->load("res/models/teapot.obj");
+	//mesh->load("res/models/wineglassesobj/wineglasses.obj", xform);
+	addMeshTrianglesToScene(mesh, material);
+
+	// create the floor triangle
+	TriangleMesh * floor = new TriangleMesh;
+	floor->createSingleTriangle();
+	floor->setV1(Vector3(-15, 0, -15));
+	floor->setV2(Vector3(0, 0, 15));
+	floor->setV3(Vector3(15, 0, -15));
+	floor->setN1(Vector3(0, 1, 0));
+	floor->setN2(Vector3(0, 1, 0));
+	floor->setN3(Vector3(0, 1, 0));
+
+	StoneTexture* stonetex = new StoneTexture();
+	
+	Triangle* t = new Triangle;
+	t->setIndex(0);
+	t->setMesh(floor);
+	Material* floormat = new PhongMaterial(Vector3(1.0f, 1.0f, 1.0f));
+	floormat->applyTexture(stonetex);
+	t->setMaterial(floormat);
+	g_scene->addObject(t);
+
+	// let objects do pre-calculations if needed
+	g_scene->preCalc();
+}
+
+// local helper function definitions
+namespace {
+
+	void
+		addMeshTrianglesToScene(TriangleMesh * mesh, Material * material) {
+		// create all the triangles in the bunny mesh and add to the scene
+		for (int i = 0; i < mesh->numTris(); ++i) {
+			Triangle* t = new Triangle;
+			t->setIndex(i);
+			t->setMesh(mesh);
+			t->setMaterial(material);
+			g_scene->addObject(t);
+		}
+	}
+
+
+	inline Matrix4x4
+		translate(float x, float y, float z) {
+		Matrix4x4 m;
+		m.setColumn4(Vector4(x, y, z, 1));
+		return m;
+	}
+
+
+	inline Matrix4x4
+		scale(float x, float y, float z) {
+		Matrix4x4 m;
+		m.m11 = x;
+		m.m22 = y;
+		m.m33 = z;
+		return m;
+	}
+
+	// angle is in degrees
+	inline Matrix4x4
+		rotate(float angle, float x, float y, float z) {
+		float rad = angle*(PI / 180.);
+
+		float x2 = x*x;
+		float y2 = y*y;
+		float z2 = z*z;
+		float c = cos(rad);
+		float cinv = 1 - c;
+		float s = sin(rad);
+		float xy = x*y;
+		float xz = x*z;
+		float yz = y*z;
+		float xs = x*s;
+		float ys = y*s;
+		float zs = z*s;
+		float xzcinv = xz*cinv;
+		float xycinv = xy*cinv;
+		float yzcinv = yz*cinv;
+
+		Matrix4x4 m;
+		m.set(x2 + c*(1 - x2), xy*cinv + zs, xzcinv - ys, 0,
+			xycinv - zs, y2 + c*(1 - y2), yzcinv + xs, 0,
+			xzcinv + ys, yzcinv - xs, z2 + c*(1 - z2), 0,
+			0, 0, 0, 1);
+		return m;
+	}
+
+} // namespace
+

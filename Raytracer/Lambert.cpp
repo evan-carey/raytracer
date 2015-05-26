@@ -28,31 +28,35 @@ Lambert::shade(const Ray& ray, const HitInfo& hit, const Scene& scene) const {
 	for (lightIter = lightlist->begin(); lightIter != lightlist->end(); lightIter++) {
 		PointLight* pLight = *lightIter;
 
-		Vector3 l = pLight->position() - hit.P;
-
-
-		// the inverse-squared falloff
-		float falloff = l.length2();
-
-		// normalize the light direction
-		l /= sqrt(falloff);
-
-#ifdef SHADOWS
-		// check for shadow
-		Ray shadow(hit.P + (l * epsilon), l);
-		HitInfo shadowHit;
-		// if theree's an object between hitpoint and light source, don't shade it
-		if (scene.trace(shadowHit, shadow, 0.0f, sqrt(falloff))) {
-			continue;
+		float contrib;
+		float samples = 1.0f;
+		if (dynamic_cast<SphereLight*>(*lightIter) || dynamic_cast<SquareLight*>(*lightIter)) {
+			samples = 32.0f;
 		}
-#endif
-		// get the diffuse component
-		float nDotL = dot(hit.N, l);
-		Vector3 result = pLight->color();
-		result *= m_kd;
+		for (int i = 0; i < samples; i++) {
+			Vector3 l = pLight->getPhotonOrigin(hit.P) - hit.P;
 
-		L += std::max(0.0f, nDotL / falloff * pLight->wattage() / PI) * result;
+			float falloff = l.length2();
+			l /= sqrt(falloff);
+#ifdef SHADOWS
+			// check for shadow
+			Ray shadow(hit.P + (l * epsilon), l);
+			HitInfo shadowHit;
+			// if theree's an object between hitpoint and light source, don't shade it
+			if (scene.trace(shadowHit, shadow, 0.0f, sqrt(falloff))) {
+
+				continue;
+			}
+#endif
+			// get the diffuse component
+			float nDotL = dot(hit.N, l);
+			Vector3 result = pLight->color();
+			result *= m_kd;
+
+			L += std::max(0.0f, nDotL / falloff * (pLight->wattage() / samples) / PI) * result;
+		}
 	}
+	
 	
     
     // add the ambient component

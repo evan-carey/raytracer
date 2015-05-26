@@ -14,6 +14,7 @@
 
 #include "assignment1.h"
 #include "assignment2.h"
+#include "assignment3.h"
 
 
 
@@ -25,7 +26,8 @@ main(int argc, char*argv[])
 	//makeBunny1Scene();
 	//makeBunny20Scene();
 	//makeSponzaScene();
-	makeCornellBoxScene();
+	//makeCornellBoxScene();
+	makeFinalScene();
 
     MiroWindow miro(&argc, argv);
     miro.mainLoop();

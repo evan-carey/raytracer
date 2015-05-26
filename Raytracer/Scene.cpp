@@ -4,12 +4,12 @@
 #include "Image.h"
 #include "Console.h"
 
-#define NUM_TRACE_CALLS 32
+#define NUM_TRACE_CALLS 6
 #define OPEN_MP
 
 #define USE_PATH_TRACING  // uncomment to use Monte Carlo path tracing
 #ifdef USE_PATH_TRACING
-    #define SAMPLES 10
+    #define SAMPLES 50
 
     //#define USE_RUSSIAN_ROULETTE // uncomment to use Russian Roulette
     #define CHANCE_TO_TERMINATE 0.5f

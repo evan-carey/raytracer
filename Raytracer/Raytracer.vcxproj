@@ -81,7 +81,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:/freeglut/include/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:/freeglut/include/;..\lib\kdtree++</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
@@ -121,6 +121,7 @@
     <ClCompile Include="assignment0.cpp" />
     <ClCompile Include="assignment1.cpp" />
     <ClCompile Include="assignment2.cpp" />
+    <ClCompile Include="assignment3.cpp" />
     <ClCompile Include="BLPatch.cpp" />
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -133,6 +134,7 @@
     <ClCompile Include="Perlin.cpp" />
     <ClCompile Include="PFMLoader.cpp" />
     <ClCompile Include="PhongMaterial.cpp" />
+    <ClCompile Include="PhotonMap.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -148,6 +150,7 @@
     <ClInclude Include="assignment0.h" />
     <ClInclude Include="assignment1.h" />
     <ClInclude Include="assignment2.h" />
+    <ClInclude Include="assignment3.h" />
     <ClInclude Include="BLPatch.h" />
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
@@ -163,6 +166,7 @@
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="PFMLoader.h" />
     <ClInclude Include="PhongMaterial.h" />
+    <ClInclude Include="PhotonMap.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
