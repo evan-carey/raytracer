@@ -18,7 +18,7 @@ Ray Ray::refract(const HitInfo& hit) const {
 	float n1 = 1.0f;
 	float n2 = 1.0f;
 
-	if (dot(hit.N, this->d) < 0) {
+	if (dot(this->d, hit.N) < 0.0f) {
 		// entering object
 		n2 = hit.material->refractionIndex();
 		n = hit.N;
@@ -40,6 +40,33 @@ Ray Ray::refract(const HitInfo& hit) const {
 	Vector3 dir = (n1 / n2) * (this->d - n * cosTheta1) - n * (sqrt(e));
 	Vector3 origin = hit.P + (dir * epsilon);
 	return Ray(origin, dir);
+}
+
+float Ray::calcFresnel(const HitInfo& hit) const {
+	float n1 = 1.0, n2 = 1.0f;
+	Vector3 n;
+
+	if (dot(this->d, hit.N) < 0.0f) {
+		// entering object
+		n2 = hit.material->refractionIndex();
+		n = hit.N;
+	} else {
+		// leaving object
+		n1 = hit.material->refractionIndex();
+		n = -hit.N;
+	}
+	float cosTheta_i = dot(-d, n);
+	float sinTheta_i = sin(acos(cosTheta_i));
+
+	// calculate  reflectance (from http://en.wikipedia.org/wiki/Fresnel_equations)
+	float n1n2sinTheta_i = (n1 / n2) * sinTheta_i;
+	float n1n2sinThetaSquared = n1n2sinTheta_i * n1n2sinTheta_i;
+	if (n1n2sinThetaSquared > 1.0f) return 1.0f; // above critical angle
+	float n2sqrt = n2 * sqrtf(1.0f - n1n2sinThetaSquared);
+	
+	float res = (n1 * cosTheta_i - n2sqrt) / (n1 * cosTheta_i + n2sqrt);
+
+	return res * res;
 }
 
 /********************************

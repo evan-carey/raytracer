@@ -28,7 +28,7 @@ public:
 	float refractionIndex() const { return m_refractionIndex; }
 
 	virtual void applyTexture(Texture* tex) { m_texture = tex; }
-	Texture* getTexture() { return m_texture; }
+	Texture* getTexture() const { return m_texture; }
 	virtual bool isTextured() const { return m_texture != NULL; }
 	
 protected:

@@ -50,11 +50,14 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 
 		float samples = 1.0f; // photon mapping
 
-		if (dynamic_cast<SphereLight*>(*lightIter) || dynamic_cast<SquareLight*>(*lightIter)) {
-			samples = 32.0f;
+		if (dynamic_cast<AreaLight*>(*lightIter)) {
+			samples = 10.0f;
 		}
 		for (int i = 0; i < samples; i++) {
-			Vector3 l = pLight->getPhotonOrigin(hit.P) - hit.P;
+			Vector3 photonOrigin = pLight->getPhotonOrigin(hit.P);
+			//Vector3 l = pLight->calcLightDir(photonOrigin, hit.P);
+			Vector3 l = photonOrigin - hit.P;
+			//Vector3 l = pLight->position() - hit.P;
 
 
 			float intensity = 1.0f;
@@ -73,15 +76,15 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			HitInfo shadowHit;
 			// if theree's an object between hitpoint and light source, don't shade it
 			if (scene.trace(shadowHit, shadow, 0.0f, sqrt(falloff))) {
+				
 				if (!shadowHit.material->isTransparent()) {
 					continue;
 				}
 				if (dot(shadowHit.N, l) < 0.0f) {
 					continue;
 				} else {
-					intensity = dot(hit.N, l);
-					if (intensity < epsilon) 
-						continue;
+					intensity = dot(shadowHit.N, l);
+					if (intensity < epsilon) continue;
 				}
 			}
 #endif
@@ -94,6 +97,15 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			// get the diffuse component
 			float nDotL = dot(hit.N, l);
 			falloff = 1.0f / (4.0f * PI * falloff);
+
+			//SquareLight *sLight = dynamic_cast<SquareLight*>(pLight);
+			//if (sLight) {
+			//	Vector3 l_n = sLight->normal();
+			//	//nDotL = dot(hit.N, -l_n);
+			//	float t = dot(l_n, sLight->position() - hit.P) / -1.0f;
+			//	//if (((hit.P - t * l_n) - sLight->position()).length2() > sLight->size()[0] * sLight->size()[1]) continue;
+			//	//falloff = 1.0f / PI;
+			//}
 
 			Vector3 result = pLight->color();
 			result *= color;

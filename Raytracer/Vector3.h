@@ -264,6 +264,11 @@ Vector3::rotated(float theta, const Vector3 & w) const
     return v0 + c * v1 + s * v2;
 }
 
+//! Return the average value of the vector (used for Russian Roulette photon mapping)
+inline float avg(const Vector3& v) {
+	return (v.x + v.y + v.z) / 3.0f;
+}
+
 
 inline std::ostream &
 operator<<(std::ostream& out, const Vector3& v)

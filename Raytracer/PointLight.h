@@ -19,7 +19,7 @@ public:
 
 	virtual void preCalc() {} // use this if you need to
 
-	virtual Vector3 getPhotonOrigin(const Vector3& hitPos) { return m_position; }
+	virtual Vector3 getPhotonOrigin(const Vector3& hitPos = NULL) { return m_position; }
 	virtual Vector3 getPhotonDirection() {
 		float x, y, z;
 		do {
@@ -29,6 +29,11 @@ public:
 		} while (x*x + y*y + z*z > 1.0f);
 		return Vector3(x, y, z).normalize();
 	}
+
+	virtual Vector3 calcLightDir(const Vector3& pOrigin, const Vector3& hitpoint) {
+		return pOrigin - hitpoint;
+	}
+
 protected:
 	Vector3 m_position;
 	Vector3 m_color;
@@ -39,7 +44,14 @@ protected:
 typedef std::vector<PointLight*> Lights;
 
 
-class SquareLight : public PointLight {
+class AreaLight : public PointLight {
+public:
+
+protected:
+
+};
+
+class SquareLight : public AreaLight {
 public:
 	SquareLight() { m_normal = Vector3(0, 1, 0); }
 	virtual ~SquareLight() {}
@@ -51,6 +63,7 @@ public:
 	const Vector3& normal() { return m_normal; }
 	float* size() { return m_size; }
 
+
 	virtual void preCalc() {
 		// set surface tangents
 		m_tan1 = cross(Vector3(0, 0, 1), m_normal);
@@ -59,11 +72,25 @@ public:
 		m_tan2 = cross(m_tan1, m_normal);
 	}
 
-	virtual Vector3 getPhotonOrigin(const Vector3& hitPos) {
-		float dx = 1.0f - (2.0f * ((float)rand() / (float)RAND_MAX)) * (m_size[0] / 2.0f);
-		float dy = 1.0f - (2.0f * ((float)rand() / (float)RAND_MAX)) * (m_size[1] / 2.0f);
+	virtual Vector3 getPhotonOrigin(const Vector3& hitPos = NULL) {
+		float dx = (1.0f - (2.0f * ((float)rand() / (float)RAND_MAX))) * (m_size[0] / 2.0f);
+		float dy = (1.0f - (2.0f * ((float)rand() / (float)RAND_MAX))) * (m_size[1] / 2.0f);
 
 		return m_position + dx * m_tan1 + dy * m_tan2;
+	}
+	virtual Vector3 getPhotonDirection() {
+		/*float u = (float)rand() / (float)RAND_MAX;
+		float v = 2.0f * PI * ((float)rand() / (float)RAND_MAX);
+		return Vector3(cos(v) * sqrtf(u), sin(v) * sqrtf(u), sqrtf(1.0f - u)).normalize();*/
+
+		float phi = 2.0f * PI * ((float)rand() / (float)RAND_MAX);
+		float theta = asin(sqrt((float)rand() / (float)RAND_MAX));
+		Vector3 dir = cos(phi) * sin(theta) * m_tan1 + sin(phi) * sin(theta) * m_tan2 + cos(theta) * m_normal;
+		return dir.normalized();
+	}
+
+	virtual Vector3 calcLightDir(const Vector3& pOrigin, const Vector3& hitpoint) {
+		return -m_normal;
 	}
 
 protected:
@@ -73,7 +100,7 @@ protected:
 };
 
 
-class SphereLight : public PointLight {
+class SphereLight : public AreaLight {
 public:
 	SphereLight(float rad = 1.0f) : m_radius(rad) {}
 	virtual ~SphereLight() {}
@@ -83,21 +110,32 @@ public:
 
 	virtual void preCalc() {}
 
-	virtual Vector3 getPhotonOrigin(const Vector3& hitPos) {
-		// disc sampling
-		Vector3 tan1, tan2;
-		Vector3 l = m_position - hitPos;
-		tan1 = cross(Vector3(0, 0, 1), l);
-		if (tan1.length2() < epsilon) tan1 = cross(Vector3(1, 0, 0), l);
-		tan2 = cross(tan1, l);
+	virtual Vector3 getPhotonOrigin(const Vector3& hitPos = NULL) {
+		if (hitPos != NULL) {
+			// disc sampling
+			Vector3 tan1, tan2;
+			Vector3 l = m_position - hitPos;
+			tan1 = cross(Vector3(0, 0, 1), l);
+			if (tan1.length2() < epsilon) tan1 = cross(Vector3(1, 0, 0), l);
+			tan2 = cross(tan1, l);
 
-		float x, y;
-		do {
-			x = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
-			y = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
-		} while (x*x + y*y > m_radius*m_radius);
+			float x, y;
+			do {
+				x = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+				y = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+			} while (x*x + y*y > m_radius*m_radius);
 
-		return m_position + tan1 * x + tan2 * y;
+			return m_position + tan1 * x + tan2 * y;
+		} else {
+			float x, y,z;
+			do {
+				x = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+				y = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+				z = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+			} while (x*x + y*y + z*z > m_radius*m_radius);
+
+			return m_position + Vector3(x,y,z);
+		}
 	}
 
 

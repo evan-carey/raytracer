@@ -6,7 +6,7 @@
 
 #define MAX_NUM_OBJECTS 8 // maximum number of objects in each leaf node
 #define MAX_TREE_DEPTH 64 // maximum depth of BVH tree
-#define NUM_SPLITS 8      // number of checks to find best splitting plane for each axis
+#define NUM_SPLITS 32      // number of checks to find best splitting plane for each axis
                           // (higher number generally results in longer BVH build time, 
                           // but shorter render time)
 

@@ -35,7 +35,10 @@ public:
     Vector3* normals()      {return m_normals;}
     TupleI3* vIndices()     {return m_vertexIndices;}
     TupleI3* nIndices()     {return m_normalIndices;}
+	TupleI3* tIndices() { return m_texCoordIndices; }
     int numTris()           {return m_numTris;}
+
+	VectorR2* texCoords() { return m_texCoords; }
 
 protected:
     void loadObj(FILE* fp, const Matrix4x4& ctm);

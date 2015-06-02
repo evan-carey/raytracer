@@ -1,3 +1,5 @@
+#pragma once
+
 //----------------------------------------------------------------------------
 // photonmap.cc
 // An example implementation of the photon map data structure
@@ -65,7 +67,8 @@ public:
 
 	void locate_photons(
 		NearestPhotons *const np,      // np is used to locate the photons
-		const int index) const;       // call with index = 1
+		const int index               // call with index = 1
+) const;
 
 	void photon_dir(
 		float *dir,                    // direction of photon (returned)
@@ -102,41 +105,3 @@ private:
 	float bbox_min[3];		// use bbox_min;
 	float bbox_max[3];		// use bbox_max;
 };
-
-
-
-/* This is the constructor for the photon map.
-* To create the photon map it is necessary to specify the
-* maximum number of photons that will be stored
-*/
-//************************************************
-Photon_map::Photon_map(const int max_phot)
-//************************************************
-{
-	stored_photons = 0;
-	prev_scale = 1;
-	max_photons = max_phot;
-
-	photons = (Photon*)malloc(sizeof(Photon) * (max_photons + 1));
-
-	if (photons == NULL) {
-		fprintf(stderr, "Out of memory initializing photon map\n");
-		exit(-1);
-	}
-
-	bbox_min[0] = bbox_min[1] = bbox_min[2] = 1e8f;
-	bbox_max[0] = bbox_max[1] = bbox_max[2] = -1e8f;
-
-	//----------------------------------------
-	// initialize direction conversion tables
-	//----------------------------------------
-
-	for (int i = 0; i<256; i++) {
-		double angle = double(i)*(1.0 / 256.0)*M_PI;
-		costheta[i] = cos(angle);
-		sintheta[i] = sin(angle);
-		cosphi[i] = cos(2.0*angle);
-		sinphi[i] = sin(2.0*angle);
-	}
-}
-

@@ -8,10 +8,13 @@
 #include "PointLight.h"
 #include "TriangleMesh.h"
 #include "Triangle.h"
+#include "Sphere.h"
 #include "Lambert.h"
 
 #include "PhongMaterial.h"
 #include "StoneTexture.h"
+
+
 
 // local helper function declarations
 namespace {
@@ -26,7 +29,7 @@ void makeFinalScene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(256, 256);
+	g_image->resize(512, 512);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.0f));
@@ -36,20 +39,24 @@ void makeFinalScene() {
 	g_camera->setFOV(55);
 
 	// create and place a point light source
-	//SphereLight * light = new SphereLight;
-	PointLight* light = new PointLight;
-	light->setPosition(Vector3(2.75, 5.49, -2.75));
-	//light->setRadius(1.5f);
+	//PointLight* light = new PointLight;
+	SphereLight * light = new SphereLight;
+	//SquareLight* light = new SquareLight;
+	//light->setNormal(Vector3(0, -1, 0));
+	//PointLight* light = new PointLight;
+	light->setPosition(Vector3(2.75, 5.0, -2.75));
+	//light->setSize(0.25f);
+	light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(40);
+	light->setWattage(90);
 	g_scene->addLight(light);
 
 
-	Material* whiteDiffuse = new Lambert(Vector3(1.0f));
-	Material* redDiffuse = new Lambert(Vector3(1.0f, 0.0f, 0.0f));
-	Material* greenDiffuse = new Lambert(Vector3(0.0f, 1.0f, 0.0f));
+	Material* whiteDiffuse = new PhongMaterial(Vector3(1.0f, 1.0f, 1.0f));
+	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.6f, 0.6f));
+	Material* greenDiffuse = new PhongMaterial(Vector3(0.6f, 1.0f, 0.6f));
 	TriangleMesh * mesh = new TriangleMesh;
-	mesh->load("res/models/cornell_box.obj");
+	mesh->load("res/models/cornell_box_empty.obj");
 
 	// add triangles to scene
 	for (int i = 0; i < mesh->numTris(); i++) {
@@ -63,6 +70,37 @@ void makeFinalScene() {
 		}
 		g_scene->addObject(t);
 	}
+
+	// add spheres
+	/*Sphere* sphereReflect = new Sphere();
+	sphereReflect->setCenter(Vector3(1.5f, 1.0f, -1.0f));
+	sphereReflect->setRadius(1.0f);
+	Material* reflectMat = new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 256.0f, 1.0f);
+	sphereReflect->setMaterial(reflectMat);
+	g_scene->addObject(sphereReflect);
+
+	Sphere* sphereRefract = new Sphere();
+	sphereRefract->setCenter(Vector3(4.0f, 1.0f, -2.5f));
+	sphereRefract->setRadius(1.0f);
+	Material* refractMat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
+	sphereRefract->setMaterial(refractMat);
+	g_scene->addObject(sphereRefract);*/
+
+	mesh = new TriangleMesh;
+	Matrix4x4 xform;
+	xform *= translate(1.5, 1.0, -3.5);
+	xform *= scale(0.75, 0.75, 0.75);
+	mesh->load("res/models/only_quad_sphere2.obj", xform);
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 10.0f, 1.0f));
+
+	mesh = new TriangleMesh;
+	xform.setIdentity();
+	xform *= translate(4.0, 1.0, -2.25);
+	xform *= scale(0.75, 0.75, 0.75);
+
+	mesh->load("res/models/only_quad_sphere2.obj", xform);
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
+
 
 	// let objects do pre-calculations if needed
 	g_scene->preCalc();
@@ -92,15 +130,18 @@ void makeFinalScene2() {
 	g_scene->addLight(light);
 
 
-	Material* material = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.2f);
+	Material* material = new PhongMaterial(Vector3(1.0f), Vector3(0.0f), Vector3(0.0f), 1.0f, 1.1f);
 	//Material* material = new Lambert(1.0f);
 	//Material* material = new PhongMaterial(Vector3(1.0f));
+	//material->applyTexture(new StoneTexture());
 	TriangleMesh * mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform.setIdentity();
 	//xform *= scale(0.005, 0.005, 0.005);
-	mesh->load("res/models/teapot.obj");
-	//mesh->load("res/models/wineglassesobj/wineglasses.obj", xform);
+	//mesh->load("res/models/teapot.obj");
+	mesh->load("res/models/only_quad_sphere2.obj", xform);
+	//mesh->load("res/models/flower_bucket_terra_cotta.obj", xform);
+	//mesh->load("res/models/knives_obj.obj", xform);
 	addMeshTrianglesToScene(mesh, material);
 
 	// create the floor triangle
@@ -119,7 +160,7 @@ void makeFinalScene2() {
 	t->setIndex(0);
 	t->setMesh(floor);
 	Material* floormat = new PhongMaterial(Vector3(1.0f, 1.0f, 1.0f));
-	floormat->applyTexture(stonetex);
+	//floormat->applyTexture(stonetex);
 	t->setMaterial(floormat);
 	g_scene->addObject(t);
 

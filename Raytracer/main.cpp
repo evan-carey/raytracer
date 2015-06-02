@@ -1,4 +1,4 @@
-#include <math.h>
+//#include <math.h>
 #include "Miro.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -12,8 +12,8 @@
 #include "Lambert.h"
 #include "MiroWindow.h"
 
-#include "assignment1.h"
-#include "assignment2.h"
+//#include "assignment1.h"
+//#include "assignment2.h"
 #include "assignment3.h"
 
 
@@ -28,7 +28,7 @@ main(int argc, char*argv[])
 	//makeSponzaScene();
 	//makeCornellBoxScene();
 	makeFinalScene();
-
+	
     MiroWindow miro(&argc, argv);
     miro.mainLoop();
 

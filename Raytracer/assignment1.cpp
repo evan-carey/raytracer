@@ -108,13 +108,13 @@ void makeSphereScene() {
 	sphere1->setCenter(Vector3(-0.75, 0.0, -1));
 	sphere1->setRadius(0.5f);
 	sphere1->setMaterial(spheremat);
-	//g_scene->addObject(sphere1);
+	g_scene->addObject(sphere1);
 
 	Sphere* sphere2 = new Sphere();
 	sphere2->setCenter(Vector3(0.75, 0.0, -1));
 	sphere2->setRadius(0.5);
 	sphere2->setMaterial(spheremat2);
-	//g_scene->addObject(sphere2);
+	g_scene->addObject(sphere2);
 
 	StoneTexture* stone = new StoneTexture();
 
@@ -147,7 +147,7 @@ void makeSphereScene() {
 	t->setIndex(0);
 	t->setMesh(floor);
 	t->setMaterial(floormat);
-	//g_scene->addObject(t);
+	g_scene->addObject(t);
 
 	// let objects do pre-calculations if needed
 	g_scene->preCalc();
@@ -192,6 +192,7 @@ void makeTeapotScene() {
 
 	TriangleMesh * teapot = new TriangleMesh;
 	teapot->load("res/models/teapot.obj");
+	
 
 	// create all the triangles in the teapot mesh and add to the scene
 	for (int i = 0; i < teapot->numTris(); ++i) {
