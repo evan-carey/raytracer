@@ -48,7 +48,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 	for (lightIter = lightlist->begin(); lightIter != lightlist->end(); lightIter++) {
 		PointLight* pLight = *lightIter;
 
-		float samples = 1.0f; // photon mapping
+		float samples = 1.0f; // Area light sampling
 
 		if (dynamic_cast<AreaLight*>(*lightIter)) {
 			samples = 10.0f;
@@ -59,10 +59,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			Vector3 l = photonOrigin - hit.P;
 			//Vector3 l = pLight->position() - hit.P;
 
-
 			float intensity = 1.0f;
-
-
 
 			// the inverse-squared falloff
 			float falloff = l.length2();
@@ -76,8 +73,8 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			HitInfo shadowHit;
 			// if theree's an object between hitpoint and light source, don't shade it
 			if (scene.trace(shadowHit, shadow, 0.0f, sqrt(falloff))) {
-				
-				if (!shadowHit.material->isTransparent()) {
+				continue;
+				/*if (!shadowHit.material->isTransparent()) {
 					continue;
 				}
 				if (dot(shadowHit.N, l) < 0.0f) {
@@ -85,7 +82,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 				} else {
 					intensity = dot(shadowHit.N, l);
 					if (intensity < epsilon) continue;
-				}
+				}*/
 			}
 #endif
 

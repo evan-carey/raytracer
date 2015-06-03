@@ -10,7 +10,6 @@ Ray Ray::reflect(const HitInfo& hit) const {
 }
 
 Ray Ray::refract(const HitInfo& hit) const {
-	
 
 	Vector3 n;
 
@@ -29,10 +28,9 @@ Ray Ray::refract(const HitInfo& hit) const {
 	}
 
 	// compute energy of refracted ray ( cos^2 (theta2) )
-	float cosTheta1 = dot(this->d, n); // NOTE: should this be n or hit.N?
+	float cosTheta1 = dot(this->d, n);
 	float e = 1 - ((n1*n1) / (n2*n2)) * (1 - cosTheta1*cosTheta1);
-	//float e = 1.0f;
-	if (e < 0.0f) { // total internal reflection
+	if (e < 0.0f) {
 		return reflect(hit);
 	}
 
@@ -58,7 +56,7 @@ float Ray::calcFresnel(const HitInfo& hit) const {
 	float cosTheta_i = dot(-d, n);
 	float sinTheta_i = sin(acos(cosTheta_i));
 
-	// calculate  reflectance (from http://en.wikipedia.org/wiki/Fresnel_equations)
+	// calculate perpendicular reflectance (from http://en.wikipedia.org/wiki/Fresnel_equations)
 	float n1n2sinTheta_i = (n1 / n2) * sinTheta_i;
 	float n1n2sinThetaSquared = n1n2sinTheta_i * n1n2sinTheta_i;
 	if (n1n2sinThetaSquared > 1.0f) return 1.0f; // above critical angle

@@ -47,7 +47,6 @@ protected:
 	// Caustics photon mapping
 	Photon_map m_causticMap;
 
-	static const int Max_Lights = 1;
 };
 
 extern Scene * g_scene;

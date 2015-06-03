@@ -47,6 +47,7 @@ public:
 	// create refraction ray
 	Ray refract(const HitInfo& hit) const;
 
+	// returns the perpendicular reflectance (R_s) from Fresnel equations
 	float calcFresnel(const HitInfo& hit) const;
 
 	// create random ray using important sampling

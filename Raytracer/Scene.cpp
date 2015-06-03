@@ -22,6 +22,7 @@
 #define NUM_CAUSTIC_PHOTONS 50000
 #define PHOTONS_TO_USE 500
 #define NUM_PHOTON_CALLS 5
+#define MAX_LIGHTS 1
 
 
 //#define DEBUG_PHOTONS
@@ -36,8 +37,8 @@ using namespace std;
 Scene * g_scene = 0;
 
 Scene::Scene() 
-	: m_photonMap(NUM_PHOTONS * 10 * Max_Lights + Max_Lights * 10000), 
-	  m_causticMap(NUM_CAUSTIC_PHOTONS * 10 * Max_Lights + Max_Lights * 10000) {
+	: m_photonMap(NUM_PHOTONS * MAX_LIGHTS), 
+	  m_causticMap(NUM_CAUSTIC_PHOTONS * MAX_LIGHTS) {
 
 }
 
@@ -174,7 +175,6 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 
 				m_photonMap.irradiance_estimate(E, P, N, 1.0e+10, PHOTONS_TO_USE);
 				m_causticMap.irradiance_estimate(C, P, N, 1.0e+10, PHOTONS_TO_USE);
-				//printf("(%.3f, %.3f, %.3f)\n", E[0] + C[0], E[1] + C[1], E[2] + C[2]);
 				res += Vector3(E[0], E[1], E[2]);
 				res += Vector3(C[0], C[1], C[2]);
 #endif
@@ -201,6 +201,7 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 
 			// check refraction
 			if (hit.material->isTransparent()) {
+				// calc reflectance 
 				float fresnel = ray.calcFresnel(hit);
 				if (fresnel > 0.01) {
 					Ray reflection = ray.reflect(hit);
@@ -209,6 +210,7 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 						res += reflectionRes * hit.material->getTransparency() * fresnel;
 					}
 				}
+				// calc transmission
 				Ray refraction = ray.refract(hit);
 				Vector3 refractionRes;
 				// recurse on refraction ray

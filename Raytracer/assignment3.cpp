@@ -53,8 +53,8 @@ void makeFinalScene() {
 
 
 	Material* whiteDiffuse = new PhongMaterial(Vector3(1.0f, 1.0f, 1.0f));
-	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.6f, 0.6f));
-	Material* greenDiffuse = new PhongMaterial(Vector3(0.6f, 1.0f, 0.6f));
+	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.0f, 0.0f));
+	Material* greenDiffuse = new PhongMaterial(Vector3(0.0f, 1.0f, 0.0f));
 	TriangleMesh * mesh = new TriangleMesh;
 	mesh->load("res/models/cornell_box_empty.obj");
 
