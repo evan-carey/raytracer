@@ -86,7 +86,7 @@ void makeFinalScene() {
 	sphereRefract->setMaterial(refractMat);
 	g_scene->addObject(sphereRefract);*/
 
-	
+	/*
 	mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform *= translate(1.5, 1.0, -3.5);
@@ -100,8 +100,8 @@ void makeFinalScene() {
 	xform *= scale(0.76, 0.76, 0.76);
 	mesh->load("res/models/only_quad_sphere2.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
+	*/
 	
-	/*
 	mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform *= translate(1.5, 0.0, -3.5);
@@ -113,7 +113,7 @@ void makeFinalScene() {
 	xform *= translate(4, 0.00, -2.25);
 	mesh->load("res/models/sphere4.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
-	*/
+	
 	/*
 	mesh = new TriangleMesh;
 	xform.setIdentity();
