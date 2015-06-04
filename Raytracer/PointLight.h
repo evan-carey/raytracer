@@ -68,7 +68,7 @@ public:
 		// set surface tangents
 		m_tan1 = cross(Vector3(0, 0, 1), m_normal);
 		if (m_tan1.length2() < epsilon)
-			m_tan1 = cross(Vector3(1, 0, 0), m_normal);
+			m_tan1 = cross(Vector3(0, 1, 0), m_normal);
 		m_tan2 = cross(m_tan1, m_normal);
 	}
 
@@ -85,8 +85,19 @@ public:
 
 		float phi = 2.0f * PI * ((float)rand() / (float)RAND_MAX);
 		float theta = asin(sqrt((float)rand() / (float)RAND_MAX));
-		Vector3 dir = cos(phi) * sin(theta) * m_tan1 + sin(phi) * sin(theta) * m_tan2 + cos(theta) * m_normal;
+
+		float u1 = sin(theta) * cos(phi);
+		float u2 = sin(theta) * sin(phi);
+		float u3 = cos(theta);
+
+		Vector3 t1 = cross(Vector3(0, 0, 1), m_normal);
+		if (t1.length2() < epsilon) t1 = cross(Vector3(0, 1, 0), m_normal);
+		Vector3 dir = (u1 * t1 + u2 * cross(t1, m_normal) + u3 * m_normal);
 		return dir.normalized();
+
+		//Vector3 dir = cos(phi) * sin(theta) * m_tan1 + sin(phi) * sin(theta) * m_tan2 + cos(theta) * m_normal;
+		//return dir.normalized();
+
 	}
 
 	virtual Vector3 calcLightDir(const Vector3& pOrigin, const Vector3& hitpoint) {

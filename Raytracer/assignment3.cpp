@@ -29,7 +29,7 @@ void makeFinalScene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(512, 512);
+	g_image->resize(1024, 1024);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.0f));
@@ -44,17 +44,17 @@ void makeFinalScene() {
 	//SquareLight* light = new SquareLight;
 	//light->setNormal(Vector3(0, -1, 0));
 	//PointLight* light = new PointLight;
-	light->setPosition(Vector3(2.75, 5.0, -2.75));
-	//light->setSize(0.25f);
+	light->setPosition(Vector3(2.75, 5.0f, -2.75));
+	//light->setSize(1.0f);
 	light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(90);
+	light->setWattage(160);
 	g_scene->addLight(light);
 
 
 	Material* whiteDiffuse = new PhongMaterial(Vector3(1.0f, 1.0f, 1.0f));
-	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.0f, 0.0f));
-	Material* greenDiffuse = new PhongMaterial(Vector3(0.0f, 1.0f, 0.0f));
+	Material* redDiffuse = new PhongMaterial(Vector3(1.0f, 0.4f, 0.4f));
+	Material* greenDiffuse = new PhongMaterial(Vector3(0.4f, 1.0f, 0.4f));
 	TriangleMesh * mesh = new TriangleMesh;
 	mesh->load("res/models/cornell_box_empty.obj");
 
@@ -86,21 +86,42 @@ void makeFinalScene() {
 	sphereRefract->setMaterial(refractMat);
 	g_scene->addObject(sphereRefract);*/
 
+	
 	mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform *= translate(1.5, 1.0, -3.5);
-	xform *= scale(0.75, 0.75, 0.75);
+	xform *= scale(0.76, 0.76, 0.76);
 	mesh->load("res/models/only_quad_sphere2.obj", xform);
-	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 10.0f, 1.0f));
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 16.0f, 1.0f));
 
 	mesh = new TriangleMesh;
 	xform.setIdentity();
 	xform *= translate(4.0, 1.0, -2.25);
-	xform *= scale(0.75, 0.75, 0.75);
-
+	xform *= scale(0.76, 0.76, 0.76);
 	mesh->load("res/models/only_quad_sphere2.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
-
+	
+	/*
+	mesh = new TriangleMesh;
+	Matrix4x4 xform;
+	xform *= translate(1.5, 0.0, -3.5);
+	mesh->load("res/models/sphere4.obj", xform);
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 16.0f, 1.0f));
+	
+	mesh = new TriangleMesh;
+	xform.setIdentity();
+	xform *= translate(4, 0.00, -2.25);
+	mesh->load("res/models/sphere4.obj", xform);
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
+	*/
+	/*
+	mesh = new TriangleMesh;
+	xform.setIdentity();
+	xform *= translate(2, 0.00, -2.35);
+	xform *= scale(0.75, 0.75, 0.75);
+	mesh->load("res/models/wineglassgoblet2.obj", xform);
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
+	*/
 
 	// let objects do pre-calculations if needed
 	g_scene->preCalc();
@@ -121,16 +142,16 @@ void makeFinalScene2() {
 	g_camera->setFOV(45);
 
 	// create and place a point light source
-	//SphereLight * light = new SphereLight;
-	PointLight* light = new PointLight;
-	light->setPosition(Vector3(10, 9, 10));
-	//light->setRadius(5.0f);
+	SphereLight * light = new SphereLight;
+	//PointLight* light = new PointLight;
+	light->setPosition(Vector3(6, 8, -5));
+	light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(2100);
 	g_scene->addLight(light);
 
 
-	Material* material = new PhongMaterial(Vector3(1.0f), Vector3(0.0f), Vector3(0.0f), 1.0f, 1.1f);
+	Material* material = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
 	//Material* material = new Lambert(1.0f);
 	//Material* material = new PhongMaterial(Vector3(1.0f));
 	//material->applyTexture(new StoneTexture());
@@ -139,8 +160,8 @@ void makeFinalScene2() {
 	xform.setIdentity();
 	//xform *= scale(0.005, 0.005, 0.005);
 	//mesh->load("res/models/teapot.obj");
-	mesh->load("res/models/only_quad_sphere2.obj", xform);
-	//mesh->load("res/models/flower_bucket_terra_cotta.obj", xform);
+	//mesh->load("res/models/only_quad_sphere2.obj", xform);
+	mesh->load("res/models/Glassobj2.obj", xform);
 	//mesh->load("res/models/knives_obj.obj", xform);
 	addMeshTrianglesToScene(mesh, material);
 
@@ -159,7 +180,7 @@ void makeFinalScene2() {
 	Triangle* t = new Triangle;
 	t->setIndex(0);
 	t->setMesh(floor);
-	Material* floormat = new PhongMaterial(Vector3(1.0f, 1.0f, 1.0f));
+	Material* floormat = new PhongMaterial(Vector3(1.0f, 0.8f, 0.8f));
 	//floormat->applyTexture(stonetex);
 	t->setMaterial(floormat);
 	g_scene->addObject(t);

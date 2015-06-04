@@ -225,9 +225,10 @@ void Photon_map::store(
 	const float dir[3])
 	//***************************
 {
-	if (stored_photons >= max_photons)
+	if (stored_photons >= max_photons) {
+		printf("Reached max photons");
 		return;
-
+	}
 	stored_photons++;
 	Photon *const node = &photons[stored_photons];
 

@@ -18,10 +18,10 @@
 #endif
 
 #define USE_PHOTON_MAPPING // uncomment to use photon mapping
-#define NUM_PHOTONS 200000
+#define NUM_PHOTONS 500000
 #define NUM_CAUSTIC_PHOTONS 50000
 #define PHOTONS_TO_USE 500
-#define NUM_PHOTON_CALLS 5
+#define NUM_PHOTON_CALLS 8
 #define MAX_LIGHTS 1
 
 
@@ -37,8 +37,8 @@ using namespace std;
 Scene * g_scene = 0;
 
 Scene::Scene() 
-	: m_photonMap(NUM_PHOTONS * MAX_LIGHTS), 
-	  m_causticMap(NUM_CAUSTIC_PHOTONS * MAX_LIGHTS) {
+	: m_photonMap(NUM_PHOTONS * MAX_LIGHTS * NUM_PHOTON_CALLS), 
+	  m_causticMap(NUM_CAUSTIC_PHOTONS * MAX_LIGHTS * NUM_PHOTON_CALLS) {
 
 }
 
@@ -173,8 +173,8 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 				float E[3] = { 0.0f, 0.0f, 0.0f }; // irradiance
 				float C[3] = { 0.0f, 0.0f, 0.0f }; // caustic
 
-				m_photonMap.irradiance_estimate(E, P, N, 1.0e+10, PHOTONS_TO_USE);
-				m_causticMap.irradiance_estimate(C, P, N, 1.0e+10, PHOTONS_TO_USE);
+				m_photonMap.irradiance_estimate(E, P, N, 1.0f, 5000);
+				m_causticMap.irradiance_estimate(C, P, N, 5.0f, 500);
 				res += Vector3(E[0], E[1], E[2]);
 				res += Vector3(C[0], C[1], C[2]);
 #endif
@@ -250,15 +250,20 @@ void Scene::calcPhotonMap(Photon_map& map, bool isCaustic) {
 #ifdef OPEN_MP
 #pragma omp parallel for
 #endif
-			for (int i = 0; i < 10000; i++) {
+			for (int i = 0; i < 100000; i++) {
 				if (photonsAdded < Max_Photons) {
 					Vector3 pFlux = aLight->color() * aLight->wattage();
 					SphereLight* spLight = dynamic_cast<SphereLight*>(aLight);
 					if (spLight) {
-						//if (isCaustic) pFlux *= PI * spLight->radius() * spLight->radius() / 10.0f;
+						//if (isCaustic) pFlux *= PI * spLight->radius() * spLight->radius();
 						//else 
 						pFlux *= PI * spLight->radius() * spLight->radius();
 					}
+					//SquareLight* sqLight = dynamic_cast<SquareLight*>(aLight);
+					//if (sqLight) {
+					//	//float r = sqLight->size()[0] / 2.0f;
+					//	//pFlux *= PI * r * r;
+					//}
 					Vector3 pOrigin = aLight->getPhotonOrigin();
 					Vector3 pDir = aLight->getPhotonDirection();
 					int numPhotons = tracePhoton(pFlux, pOrigin, pDir, 0, isCaustic);
