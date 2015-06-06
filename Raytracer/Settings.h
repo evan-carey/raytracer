@@ -35,8 +35,8 @@ const float CHANCE_TO_TERMINATE = 0.5f;
 
 /* Photon Mapping */
 // Global
-//#define USE_PHOTON_MAPPING // uncomment to use photon mapping
-const int NUM_PHOTONS = 20000; // global photons per light source
+#define USE_PHOTON_MAPPING // uncomment to use photon mapping
+const int NUM_PHOTONS = 200000; // global photons per light source
 const int GLOBAL_PHOTONS_TO_USE = 500; // global photons to use in irradiance estimate
 const float GLOBAL_MAX_DISTANCE = 1.0f; // max distance to look for photons in irradiance estimate
 // Caustic

@@ -100,8 +100,10 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 				if (nDotL < cos(spot->phi())) {
 					continue;
 					//intensity = 0.0f;
+				/*} else if (nDotL > cos(spot->theta())) {
+					intensity = 1.0f;*/
 				} else {
-					intensity = pow(spot->wattage() * nDotL, 0.5);
+					intensity = pow(nDotL, 1.5);
 					//float alpha = dot(spot->normal(), hit.P - spot->position());
 					//if (alpha > 0.0f) {
 					//float p = 1.0f; // falloff rate

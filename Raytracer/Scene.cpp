@@ -59,7 +59,7 @@ Scene::preCalc() {
 #ifdef USE_PHOTON_MAPPING
 	// Build photon map
 	calcPhotonMap(m_photonMap, false);
-	//calcPhotonMap(m_causticMap, true);
+	calcPhotonMap(m_causticMap, true);
 #endif
 }
 
@@ -233,7 +233,7 @@ void Scene::calcPhotonMap(Photon_map& map, bool isCaustic) {
 			for (int i = 0; i < 100000; i++) {
 				if (photonsAdded < Max_Photons) {
 					Vector3 pFlux = aLight->color() * aLight->wattage();
-					SphereLight* spLight = dynamic_cast<SphereLight*>(aLight);
+					SpotLight* spLight = dynamic_cast<SpotLight*>(aLight);
 					if (spLight) {
 						//if (isCaustic) pFlux *= PI * spLight->radius() * spLight->radius();
 						//else 
