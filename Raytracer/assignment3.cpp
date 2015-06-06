@@ -39,16 +39,16 @@ void makeFinalScene() {
 	g_camera->setFOV(55);
 
 	// create and place a point light source
-	PointLight* light = new PointLight;
-	//SphereLight * light = new SphereLight;
-	//SquareLight* light = new SquareLight;
-	//light->setNormal(Vector3(0, -1, 0));
 	//PointLight* light = new PointLight;
-	light->setPosition(Vector3(2.75, 5.0f, -2.75));
+	//SphereLight * light = new SphereLight;
+	SpotLight* light = new SpotLight(Vector3(0,-1,0), 1.0f, PI/32.0f, PI/8.0f);
+	//light->setNormal(Vector3(0, 1, 0));
+	//PointLight* light = new PointLight;
+	light->setPosition(Vector3(2.75, 5.49f, -2.75));
 	//light->setSize(1.0f);
-	//light->setRadius(0.2f);
+	//light->setRadius(1.0f);
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(160);
+	light->setWattage(140);
 	g_scene->addLight(light);
 
 
@@ -108,13 +108,13 @@ void makeFinalScene() {
 	mesh->load("res/models/sphere4.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 16.0f, 1.0f));
 	
-	
+	/*
 	mesh = new TriangleMesh;
 	xform.setIdentity();
 	xform *= translate(4, 0.00, -2.25);
 	mesh->load("res/models/sphere4.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
-	
+	*/
 	
 	/*
 	mesh = new TriangleMesh;

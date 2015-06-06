@@ -94,14 +94,22 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			float nDotL = dot(hit.N, l);
 			falloff = 1.0f / (4.0f * PI * falloff);
 
-			//SquareLight *sLight = dynamic_cast<SquareLight*>(pLight);
-			//if (sLight) {
-			//	Vector3 l_n = sLight->normal();
-			//	//nDotL = dot(hit.N, -l_n);
-			//	float t = dot(l_n, sLight->position() - hit.P) / -1.0f;
-			//	//if (((hit.P - t * l_n) - sLight->position()).length2() > sLight->size()[0] * sLight->size()[1]) continue;
-			//	//falloff = 1.0f / PI;
-			//}
+			SpotLight* spot = dynamic_cast<SpotLight*>(pLight);
+			if (spot) {
+				nDotL = dot(-l, spot->normal());
+				if (nDotL < cos(spot->phi())) {
+					continue;
+					//intensity = 0.0f;
+				} else {
+					intensity = pow(spot->wattage() * nDotL, 0.5);
+					//float alpha = dot(spot->normal(), hit.P - spot->position());
+					//if (alpha > 0.0f) {
+					//float p = 1.0f; // falloff rate
+					//intensity = pow((alpha - cos(spot->phi() / 2.0f)) / (cos(spot->theta() / 2.0f) - cos(spot->phi() / 2.0f)), p);
+					//intensity = intensity < 0.0f ? 0.0f : intensity > 1.0f ? 1.0f : intensity;
+					//}
+				}
+			}
 
 			Vector3 result = pLight->color();
 			result *= color;
@@ -109,8 +117,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			// E = (phi * (n dot l)) / 4 * PI * r^2
 			float irradiance = (pLight->wattage()/(float)samples) * nDotL * falloff;
 
-			L += (std::max(0.0f, irradiance)) * result * intensity;
-
+			L += (std::max(0.0f, irradiance)) * result *intensity;
 
 			// get the specular component
 			if (isSpecular()) {
@@ -120,6 +127,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 				float eDotR = dot(viewDir, r);
 				eDotR = 0.0f > eDotR ? 0.0f : 1.0f < eDotR ? 1.0f : eDotR; // clamp it to [0..1]
 				eDotR = pow(eDotR, (int)shininess());
+				
 				L += eDotR * falloff * (pLight->wattage()/(float)samples);
 			}
 		}

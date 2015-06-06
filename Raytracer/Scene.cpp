@@ -59,7 +59,7 @@ Scene::preCalc() {
 #ifdef USE_PHOTON_MAPPING
 	// Build photon map
 	calcPhotonMap(m_photonMap, false);
-	calcPhotonMap(m_causticMap, true);
+	//calcPhotonMap(m_causticMap, true);
 #endif
 }
 
