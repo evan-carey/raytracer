@@ -28,10 +28,9 @@ Lambert::shade(const Ray& ray, const HitInfo& hit, const Scene& scene) const {
 	for (lightIter = lightlist->begin(); lightIter != lightlist->end(); lightIter++) {
 		PointLight* pLight = *lightIter;
 
-		float contrib;
 		float samples = 1.0f;
 		if (dynamic_cast<SphereLight*>(*lightIter) || dynamic_cast<SquareLight*>(*lightIter)) {
-			samples = 32.0f;
+			samples = AREA_LIGHT_SAMPLES;
 		}
 		for (int i = 0; i < samples; i++) {
 			Vector3 l = pLight->getPhotonOrigin(hit.P) - hit.P;
