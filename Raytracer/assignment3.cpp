@@ -39,14 +39,14 @@ void makeFinalScene() {
 	g_camera->setFOV(55);
 
 	// create and place a point light source
-	//PointLight* light = new PointLight;
-	SphereLight * light = new SphereLight;
+	PointLight* light = new PointLight;
+	//SphereLight * light = new SphereLight;
 	//SquareLight* light = new SquareLight;
 	//light->setNormal(Vector3(0, -1, 0));
 	//PointLight* light = new PointLight;
 	light->setPosition(Vector3(2.75, 5.0f, -2.75));
 	//light->setSize(1.0f);
-	light->setRadius(0.2f);
+	//light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(160);
 	g_scene->addLight(light);

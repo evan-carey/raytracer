@@ -170,6 +170,7 @@
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StatsReporter.h" />
     <ClInclude Include="StoneTexture.h" />
