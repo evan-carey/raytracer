@@ -31,11 +31,14 @@ public:
 	// recursive trace to include reflection and refraction
 	bool trace(const Ray& ray, int numCalls, Vector3& res);
 
-
 	void calcPhotonMap(Photon_map& map, bool isCaustic);
-
-
 	int tracePhoton(const Vector3& flux, const Vector3& origin, const Vector3& dir, int numCalls, bool isCaustic);
+
+	void setEnvMap(Texture* envMap) { m_envMap = envMap; }
+	void setEnvMapRotation(float phi, float theta) {
+		m_mapRotation[0] = phi; m_mapRotation[1] = theta;
+	}
+	Vector3 bgColor(const Ray& ray);
 
 protected:
     Objects m_objects;
@@ -47,6 +50,9 @@ protected:
 	// Caustics photon mapping
 	Photon_map m_causticMap;
 
+	// environment map
+	Texture* m_envMap;
+	float m_mapRotation[2];
 };
 
 extern Scene * g_scene;

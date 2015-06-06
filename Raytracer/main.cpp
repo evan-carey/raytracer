@@ -21,17 +21,20 @@
 int
 main(int argc, char*argv[])
 {
+	FreeImage_Initialise();
     // create a scene
 	//makeTeapotScene2();
 	//makeBunny1Scene();
 	//makeBunny20Scene();
 	//makeSponzaScene();
 	//makeCornellBoxScene();
-	makeFinalScene();
+	//makeFinalScene2();
+	testEnvMap();
 	
     MiroWindow miro(&argc, argv);
     miro.mainLoop();
 
+	FreeImage_DeInitialise();
     return 0; // never executed
 }
 

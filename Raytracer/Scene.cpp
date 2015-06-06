@@ -99,7 +99,7 @@ Scene::raytraceImage(Camera *cam, Image *img) {
 					finalResult += shadeResult;
 				} else {
 					//img->setPixel(i, j, cam->bgColor());
-					finalResult = cam->bgColor();
+					finalResult += bgColor(ray);
 					//break;
 				}
 			}
@@ -200,7 +200,7 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 			}
 			return true;
 		} else {
-			res = g_camera->bgColor();
+			res = bgColor(ray);
 			return true;
 		}
 	}
@@ -364,4 +364,28 @@ int Scene::tracePhoton(const Vector3& flux, const Vector3& origin, const Vector3
 		}
 	}
 	return 0;
+}
+
+Vector3 Scene::bgColor(const Ray& ray) {
+	if (!m_envMap) {
+		return g_camera->bgColor();
+	}
+
+	float phi = atan2(ray.d.x, ray.d.z) + m_mapRotation[0] + PI;
+	float theta = asin(ray.d.y) + m_mapRotation[1];
+
+	// clamp values
+	if (phi > 2.0f * PI) {
+		phi -= 2.0f * PI;
+	}
+	if (theta > PI / 2.0f) {
+		theta -= 2.0f * (theta - PI / 2.0f);
+		phi += PI;
+	}
+
+	// convert to texture coordinates
+	float u = phi / (2.0f * PI);
+	float v = 0.5f + theta / PI;
+
+	return m_envMap->getColor2D(TexPoint(u, v));
 }

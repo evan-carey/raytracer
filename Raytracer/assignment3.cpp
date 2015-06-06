@@ -138,41 +138,50 @@ void makeFinalScene2() {
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
-	g_camera->setEye(Vector3(0, 4, 6));
-	g_camera->setLookAt(Vector3(0, 0, 0));
+	g_camera->setEye(Vector3(0, 20, 20));
+	g_camera->setLookAt(Vector3(0, 10, 0));
 	g_camera->setUp(Vector3(0, 1, 0));
 	g_camera->setFOV(45);
 
 	// create and place a point light source
-	SphereLight * light = new SphereLight;
+	SpotLight * light = new SpotLight(Vector3(-1, -1, -1), 0.2f, PI / 12.0f, PI / 6.0f);
 	//PointLight* light = new PointLight;
-	light->setPosition(Vector3(6, 8, -5));
-	light->setRadius(0.2f);
+	light->setPosition(Vector3(6, 28, 5));
+	//light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(2100);
+	light->setWattage(350);
 	g_scene->addLight(light);
 
 
+	Texture* envMap = new FileTexture("res/textures/studio024.hdr");
+	g_scene->setEnvMap(envMap);
+	g_scene->setEnvMapRotation(0.0f, 0.0f);
+
 	Material* material = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
-	//Material* material = new Lambert(1.0f);
-	//Material* material = new PhongMaterial(Vector3(1.0f));
-	//material->applyTexture(new StoneTexture());
 	TriangleMesh * mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform.setIdentity();
-	//xform *= scale(0.005, 0.005, 0.005);
-	//mesh->load("res/models/teapot.obj");
-	//mesh->load("res/models/only_quad_sphere2.obj", xform);
-	mesh->load("res/models/Glassobj2.obj", xform);
-	//mesh->load("res/models/knives_obj.obj", xform);
+	xform *= translate(0.0f, (48.344666 + 27.825138) * 0.25, 0.0f);
+	mesh->load("res/models/3_wineglasses.obj", xform);
 	addMeshTrianglesToScene(mesh, material);
+
+
+	Material *tablemat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
+	Material *legmat = new PhongMaterial(Vector3(0.64f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
+
+	mesh = new TriangleMesh;
+	xform.setIdentity();
+	xform *= scale(0.25f, 0.25f, 0.25f);
+	xform *= translate(0.0f, 48.344666, 0.0f);
+	mesh->load("res/models/simple_table_2.obj", xform);
+	addMeshTrianglesToScene(mesh, legmat);
 
 	// create the floor triangle
 	TriangleMesh * floor = new TriangleMesh;
 	floor->createSingleTriangle();
-	floor->setV1(Vector3(-15, 0, -15));
-	floor->setV2(Vector3(0, 0, 15));
-	floor->setV3(Vector3(15, 0, -15));
+	floor->setV1(Vector3(-100, 0, -100));
+	floor->setV2(Vector3(0, 0, 100));
+	floor->setV3(Vector3(100, 0, -100));
 	floor->setN1(Vector3(0, 1, 0));
 	floor->setN2(Vector3(0, 1, 0));
 	floor->setN3(Vector3(0, 1, 0));
@@ -182,7 +191,67 @@ void makeFinalScene2() {
 	Triangle* t = new Triangle;
 	t->setIndex(0);
 	t->setMesh(floor);
-	Material* floormat = new PhongMaterial(Vector3(1.0f, 0.8f, 0.8f));
+	Material* floormat = new PhongMaterial(Vector3(1.0f, 0.6f, 0.7f));
+	//floormat->applyTexture(stonetex);
+	t->setMaterial(floormat);
+	g_scene->addObject(t);
+
+	// let objects do pre-calculations if needed
+	g_scene->preCalc();
+}
+
+void testEnvMap() {
+	g_camera = new Camera;
+	g_scene = new Scene;
+	g_image = new Image;
+
+	g_image->resize(512, 512);
+
+	// set up the camera
+	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.5f));
+	g_camera->setEye(Vector3(0, 2, 3.75));
+	g_camera->setLookAt(Vector3(0, 1, 0));
+	g_camera->setUp(Vector3(0, 1, 0));
+	g_camera->setFOV(55);
+
+	// create and place a point light source
+	//PointLight* light = new PointLight;
+	//SphereLight * light = new SphereLight;
+	SpotLight* light = new SpotLight(Vector3(-1, -1, 1), 0.2f, PI / 8.0f, PI / 4.0f);
+	//light->setNormal(Vector3(0, 1, 0));
+	//PointLight* light = new PointLight;
+	light->setPosition(Vector3(2.75, 5.49f, -2.75));
+	//light->setSize(1.0f);
+	//light->setRadius(1.0f);
+	light->setColor(Vector3(1, 1, 1));
+	light->setWattage(140);
+	g_scene->addLight(light);
+
+	Texture* envMap = new FileTexture("res/textures/studio024.hdr");
+	g_scene->setEnvMap(envMap);
+	g_scene->setEnvMapRotation(0.0f, 0.0f);
+
+	TriangleMesh* mesh = new TriangleMesh;
+	Matrix4x4 xform;
+	xform *= translate(0, 0.0, 0);
+	mesh->load("res/models/sphere4.obj", xform);
+	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 16.0f, 1.5f));
+
+	// create the floor triangle
+	TriangleMesh * floor = new TriangleMesh;
+	floor->createSingleTriangle();
+	floor->setV1(Vector3(-100, 0, -15));
+	floor->setV2(Vector3(0, 0, 15));
+	floor->setV3(Vector3(15, 0, -15));
+	floor->setN1(Vector3(0, 1, 0));
+	floor->setN2(Vector3(0, 1, 0));
+	floor->setN3(Vector3(0, 1, 0));
+
+
+	Triangle* t = new Triangle;
+	t->setIndex(0);
+	t->setMesh(floor);
+	Material* floormat = new PhongMaterial(Vector3(1.0f, 0.6f, 0.7f));
 	//floormat->applyTexture(stonetex);
 	t->setMaterial(floormat);
 	g_scene->addObject(t);

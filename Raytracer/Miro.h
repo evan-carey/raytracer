@@ -15,6 +15,7 @@ const float RadToDeg = 180.0f/PI;
 #include "OpenGL.h"
 #include <stdio.h>
 #include <iostream>
+#include <FreeImage.h>
 #include "Settings.h"
 
 class Ray;
