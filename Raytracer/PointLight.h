@@ -154,4 +154,46 @@ protected:
 	float m_radius;
 };
 
+class DiscLight : public SquareLight {
+public:
+	DiscLight(float rad = 1.0f) : m_radius(rad) {}
+
+	float setRadius(float rad) { m_radius = rad; }
+	float radius() { return m_radius; }
+
+	virtual Vector3 getPhotonOrigin(const Vector3& hitPos = NULL) {
+		if (hitPos != NULL) {
+			// disc sampling
+			Vector3 tan1, tan2;
+			Vector3 l = m_position - hitPos;
+			tan1 = cross(Vector3(0, 0, 1), l);
+			if (tan1.length2() < epsilon) tan1 = cross(Vector3(1, 0, 0), l);
+			tan2 = cross(tan1, l);
+
+			float x, y;
+			do {
+				x = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+				y = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+			} while (x*x + y*y > m_radius*m_radius);
+
+			return m_position + tan1 * x + tan2 * y;
+		} else {
+			float x, y, z;
+			do {
+				x = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+				y = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+				z = (1 - 2 * ((float)rand() / (float)RAND_MAX)) * m_radius;
+			} while (x*x + y*y + z*z > m_radius*m_radius);
+
+			return m_position + Vector3(x, y, z);
+		}
+	}
+
+	virtual Vector3 getPhotonDirection() const {
+		return m_normal;
+	}
+protected:
+	float m_radius;
+};
+
 #endif // CSE168_POINTLIGHT_H_INCLUDED

@@ -6,27 +6,7 @@
 #include "Sphere.h"
 #include "PhongMaterial.h"
 
-#define NUM_TRACE_CALLS 10
-#define OPEN_MP
 
-//#define USE_PATH_TRACING  // uncomment to use Monte Carlo path tracing
-#ifdef USE_PATH_TRACING
-    #define SAMPLES 30
-
-    //#define USE_RUSSIAN_ROULETTE // uncomment to use Russian Roulette
-    #define CHANCE_TO_TERMINATE 0.5f
-#endif
-
-#define USE_PHOTON_MAPPING // uncomment to use photon mapping
-#define NUM_PHOTONS 500000
-#define NUM_CAUSTIC_PHOTONS 50000
-#define PHOTONS_TO_USE 500
-#define NUM_PHOTON_CALLS 8
-#define MAX_LIGHTS 1
-
-
-//#define DEBUG_PHOTONS
-//#define DEBUG_CAUSTICS
 
 #ifdef OPEN_MP
 #include <omp.h>
@@ -99,14 +79,14 @@ Scene::raytraceImage(Camera *cam, Image *img) {
         {
 			Vector3 finalResult(0.0f);
 
-#ifdef USE_PATH_TRACING
-			// Sample each pixel multiple times for path tracing
+#if defined USE_PATH_TRACING || defined USE_DOF
+			// Sample each pixel multiple times
 			for (int k = 0; k < SAMPLES; k++) 
 #endif
 			{ 
 				Vector3 shadeResult(0.0f);
 				Ray ray;
-#ifdef USE_PATH_TRACING
+#if defined USE_PATH_TRACING || defined USE_DOF
 				// create ray through random point in pixel (i,j)
 				ray = cam->randomEyeRay(i, j, img->width(), img->height());
 #else
@@ -123,7 +103,7 @@ Scene::raytraceImage(Camera *cam, Image *img) {
 					//break;
 				}
 			}
-#ifdef USE_PATH_TRACING
+#if defined USE_PATH_TRACING || defined USE_DOF
 			finalResult /= (float)SAMPLES;
 #endif
 			img->setPixel(i, j, finalResult);
@@ -173,8 +153,8 @@ bool Scene::trace(const Ray& ray, int numCalls, Vector3& res) {
 				float E[3] = { 0.0f, 0.0f, 0.0f }; // irradiance
 				float C[3] = { 0.0f, 0.0f, 0.0f }; // caustic
 
-				m_photonMap.irradiance_estimate(E, P, N, 1.0f, 5000);
-				m_causticMap.irradiance_estimate(C, P, N, 5.0f, 500);
+				m_photonMap.irradiance_estimate(E, P, N, GLOBAL_MAX_DISTANCE, GLOBAL_PHOTONS_TO_USE);
+				m_causticMap.irradiance_estimate(C, P, N, CAUSTIC_MAX_DISTANCE, CAUSTIC_PHOTONS_TO_USE);
 				res += Vector3(E[0], E[1], E[2]);
 				res += Vector3(C[0], C[1], C[2]);
 #endif

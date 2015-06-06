@@ -29,7 +29,7 @@ void makeFinalScene() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(1024, 1024);
+	g_image->resize(512, 512);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.0f));
@@ -108,16 +108,18 @@ void makeFinalScene() {
 	mesh->load("res/models/sphere4.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(1.0f), Vector3(0.0f), 16.0f, 1.0f));
 	
+	
 	mesh = new TriangleMesh;
 	xform.setIdentity();
 	xform *= translate(4, 0.00, -2.25);
 	mesh->load("res/models/sphere4.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));
 	
+	
 	/*
 	mesh = new TriangleMesh;
 	xform.setIdentity();
-	xform *= translate(2, 0.00, -2.35);
+	xform *= translate(3, 0.00, -2.35);
 	xform *= scale(0.75, 0.75, 0.75);
 	mesh->load("res/models/wineglassgoblet2.obj", xform);
 	addMeshTrianglesToScene(mesh, new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f));

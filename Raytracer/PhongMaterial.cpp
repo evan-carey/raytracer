@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include <algorithm>
 
-#define SHADOWS
 
 PhongMaterial::PhongMaterial(const Vector3& kd, const Vector3& ks, const Vector3& kt, const float shine, const float ri) {
 
@@ -51,7 +50,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		float samples = 1.0f; // Area light sampling
 
 		if (dynamic_cast<AreaLight*>(*lightIter)) {
-			samples = 50.0f;
+			samples = AREA_LIGHT_SAMPLES;
 		}
 		for (int i = 0; i < samples; i++) {
 			Vector3 photonOrigin = pLight->getPhotonOrigin(hit.P);

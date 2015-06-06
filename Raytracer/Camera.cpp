@@ -154,7 +154,31 @@ Ray Camera::randomEyeRay(int x, int y, int imageWidth, int imageHeight) {
 	const float left = -right;
 
 
+#ifdef USE_DOF
+	// set new eye using disc sampling
+	float dx, dy;
+	do {
+		dx = (2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f) * APERTURE_RADIUS;
+		dy = (2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f) * APERTURE_RADIUS;
+	} while (dx*dx + dy*dy > APERTURE_RADIUS * APERTURE_RADIUS);
 
+	Vector3 eyeOffset = dx * uDir + dy * vDir;
+
+	// calc new view direction
+	Vector3 offsetViewDir = (m_viewDir * FOCUS_DISTANCE) - eyeOffset;
+	Vector3 offsetWDir = Vector3(-offsetViewDir).normalize();
+
+	// transform x and y into camera space 
+	// -----------------------------------
+	float delta_x = (float)rand() / (float)RAND_MAX;
+	float delta_y = (float)rand() / (float)RAND_MAX;
+
+	const float imPlaneUPos = left + (right - left)*(((float)x + delta_x) / (float)imageWidth);
+	const float imPlaneVPos = bottom + (top - bottom)*(((float)y + delta_y) / (float)imageHeight);
+
+	return Ray(m_eye + eyeOffset, (imPlaneUPos*uDir + imPlaneVPos*vDir - offsetWDir).normalize());
+
+#else
 	// transform x and y into camera space 
 	// -----------------------------------
 
@@ -165,4 +189,6 @@ Ray Camera::randomEyeRay(int x, int y, int imageWidth, int imageHeight) {
 	const float imPlaneVPos = bottom + (top - bottom)*(((float)y + delta_y) / (float)imageHeight);
 
 	return Ray(m_eye, (imPlaneUPos*uDir + imPlaneVPos*vDir - wDir).normalize());
+
+#endif
 }
