@@ -56,7 +56,7 @@ public:
 	SquareLight() { m_normal = Vector3(0, 1, 0); }
 	virtual ~SquareLight() {}
 
-	virtual void setNormal(const Vector3& n) { m_normal = n; }
+	virtual void setNormal(const Vector3& n) { m_normal = n.normalized(); }
 	void setSize(float s) { m_size[0] = s; m_size[1] = s; }
 	void setSize(float s, float t) { m_size[0] = s; m_size[1] = t; }
 

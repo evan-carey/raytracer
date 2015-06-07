@@ -28,8 +28,8 @@ main(int argc, char*argv[])
 	//makeBunny20Scene();
 	//makeSponzaScene();
 	//makeCornellBoxScene();
-	//makeFinalScene2();
-	testEnvMap();
+	makeFinalScene2();
+	//testEnvMap();
 	
     MiroWindow miro(&argc, argv);
     miro.mainLoop();

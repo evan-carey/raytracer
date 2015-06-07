@@ -134,12 +134,12 @@ void makeFinalScene2() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(512, 512);
+	g_image->resize(1600, 900);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
-	g_camera->setEye(Vector3(0, 20, 20));
-	g_camera->setLookAt(Vector3(0, 10, 0));
+	g_camera->setEye(Vector3(10, 24, 3));
+	g_camera->setLookAt(Vector3(0, 20, -3));
 	g_camera->setUp(Vector3(0, 1, 0));
 	g_camera->setFOV(45);
 
@@ -149,25 +149,25 @@ void makeFinalScene2() {
 	light->setPosition(Vector3(6, 28, 5));
 	//light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
-	light->setWattage(350);
+	light->setWattage(500);
 	g_scene->addLight(light);
 
 
-	Texture* envMap = new FileTexture("res/textures/studio024.hdr");
+	Texture* envMap = new FileTexture("res/textures/studio015.hdr");
 	g_scene->setEnvMap(envMap);
-	g_scene->setEnvMapRotation(0.0f, 0.0f);
+	g_scene->setEnvMapRotation(PI/2.0f, 0.0f);
 
 	Material* material = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
 	TriangleMesh * mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform.setIdentity();
 	xform *= translate(0.0f, (48.344666 + 27.825138) * 0.25, 0.0f);
-	mesh->load("res/models/3_wineglasses.obj", xform);
+	mesh->load("res/models/3_wine_glasses.obj", xform);
 	addMeshTrianglesToScene(mesh, material);
 
 
 	Material *tablemat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
-	Material *legmat = new PhongMaterial(Vector3(0.64f), Vector3(0.5f), Vector3(0.0f), 1.0f, 1.0f);
+	Material *legmat = new PhongMaterial(Vector3(0.64f), Vector3(0.36f), Vector3(0.0f), 1.0f, 1.0f);
 
 	mesh = new TriangleMesh;
 	xform.setIdentity();
@@ -194,7 +194,7 @@ void makeFinalScene2() {
 	Material* floormat = new PhongMaterial(Vector3(1.0f, 0.6f, 0.7f));
 	//floormat->applyTexture(stonetex);
 	t->setMaterial(floormat);
-	g_scene->addObject(t);
+	//g_scene->addObject(t);
 
 	// let objects do pre-calculations if needed
 	g_scene->preCalc();
