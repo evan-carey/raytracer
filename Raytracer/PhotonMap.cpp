@@ -151,9 +151,8 @@ void Photon_map::locate_photons(
 	dist1 = p->pos[2] - np->pos[2];
 	dist2 += dist1*dist1;
 
-	//float pdir[3];
-	//photon_dir(pdir, p);
-	if (dist2 < np->dist2[0]) {// && (pdir[0] * normal[0] + pdir[1] * normal[1] + pdir[2] * normal[2]) < 0.0f) {
+
+	if (dist2 < np->dist2[0]) {
 		// we found a photon :) Insert it in the candidate list
 
 		if (np->found < np->max) {

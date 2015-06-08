@@ -94,13 +94,9 @@ Scene::raytraceImage(Camera *cam, Image *img) {
 #endif
 				//if (trace(hitInfo, ray))
 				if (trace(ray, 0, shadeResult)) {
-					//shadeResult = hitInfo.material->shade(ray, hitInfo, *this);
-					//img->setPixel(i, j, shadeResult);
 					finalResult += shadeResult;
 				} else {
-					//img->setPixel(i, j, cam->bgColor());
 					finalResult += bgColor(ray);
-					//break;
 				}
 			}
 #if defined USE_PATH_TRACING || defined USE_DOF
@@ -235,15 +231,9 @@ void Scene::calcPhotonMap(Photon_map& map, bool isCaustic) {
 					Vector3 pFlux = aLight->color() * aLight->wattage();
 					SpotLight* spLight = dynamic_cast<SpotLight*>(aLight);
 					if (spLight) {
-						//if (isCaustic) pFlux *= PI * spLight->radius() * spLight->radius();
-						//else 
 						pFlux *= PI * spLight->radius() * spLight->radius();
 					}
-					//SquareLight* sqLight = dynamic_cast<SquareLight*>(aLight);
-					//if (sqLight) {
-					//	//float r = sqLight->size()[0] / 2.0f;
-					//	//pFlux *= PI * r * r;
-					//}
+
 					Vector3 pOrigin = aLight->getPhotonOrigin();
 					Vector3 pDir = aLight->getPhotonDirection();
 					int numPhotons = tracePhoton(pFlux, pOrigin, pDir, 0, isCaustic);
@@ -252,7 +242,6 @@ void Scene::calcPhotonMap(Photon_map& map, bool isCaustic) {
 					{
 						photonsAdded += numPhotons;
 						photonsEmitted++;
-
 					}
 				}
 				if (omp_get_thread_num() == 0) {
@@ -293,7 +282,7 @@ int Scene::tracePhoton(const Vector3& flux, const Vector3& origin, const Vector3
 		float w_s = avg(hit.material->getSpecular()); // specular reflection weight
 		float w_t = avg(hit.material->getTransparency()); // refraction weight
 
-		float r = ((float)rand() / (float)RAND_MAX);// *(w_d + w_s + w_t);
+		float r = ((float)rand() / (float)RAND_MAX);
 
 		if (r < w_d) {
 			// Diffuse

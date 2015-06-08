@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CSE 168 - Final Project</title>
+</head>
+<body>
+	<h1>UCSD CSE 168 - Rendering Algorithms (Spring 2015)</h1>
+	<h2>Programming Assigment 3</h2>
+	<p>By Evan Carey and Robin Clark</p>
+	&nbsp;
+	&nbsp;
+	<h2>Project Description</h2>
+	<p>
+		"This assignment involves rendering a realistic image of an object or scene of your own choosing. The scene or object should be challenging enough to require you to design and implement one or more advanced rendering algorithms." <br>
+		(full description available <a href="http://graphics.ucsd.edu/~henrik/courses/cse168/ucsd/cse168_assign3.pdf">here</a>)
+	</p>
+	<h2>Reference Image</h2>
+	<p>
+		Our goal was to recreate the following image, a shot captured from the first episode of Chef's Table on Netflix, depicting glass sculptures on a table. 
+	</p>
+	<img src="img/reference_image.png" width="960px" />
+	<h2>What we implemented</h2>
+	<p>
+		To accurately depict the scene, we simulated global illumination using photon mapping, creating separate maps for global photons and caustic photons. To make realistic-looking glass, we implemented Fresnel reflection. To mimic the blurred background of the shot, we used environment mapping and depth-of-field.
+	</p>
+	<h2>Results</h2>
+	<p>
+		Our final image depicts three wine glasses on a glossy table.
+	</p>
+	<img src="img/3_wine_glasses2.png" />
+	<h3>Indirect Illumination and Caustics using Photon Mapping</h3>
+	<p>
+		Our scene contains a single spot light, which emits 100,000 global photons and 50,000 caustic photons. Irradiance is estimated from 500 local photons in a radius of 1.0. On contact with a surface, photon behavior is determined using Russian roulette. Photons surviving after eight bounces are automatically terminated. Photon map storage and irradiance estimation was done using Henrik Wann Jensen's 2001 implementation.
+	</p>
+	<h3>Glass and Fresnel Reflections</h3>
+	<p>
+		We simulated the behavior of glass by using the Phong shading model and the Fresnel equations. Most notably, ray behavior on glass surfaces were determined by calculating the the reflectance for s-polarized light. The transmittance and reflectance of the light varies based on the angle of incidence between the ray and the surface. Implementing this greatly improved the look of the glass in our scene.
+	</p>
+	<h3>Depth-of-Field</h3>
+	<p>
+		To recreate the camera lens blur effect apparent in the reference image, we implemented a depth-of-field technique. Given an aperture radius and a focal distance, for each pixel in the scene, our algorithm randomly creates a ray within the radius of the eye (disc sampling) and traces it through the point at the focal distance. The trace results are averaged to get the final color value of the pixel. This method produces a convincing blur effect for objects that are "not in focus." To create a smooth blurring effect, however, this method requires a large number of samples from the camera. Due to time constraints and its impact on render time, we decided not to include it in our final image. Its effectiveness can be seen in the simple glass ball scene <a href="#glass_ball">here</a>.
+	</p>
+	
+
+	<h3>Miscellaneous Details</h3>
+		<h4>Models</h4>
+		<p>
+			The wine glass and table models are freely available on TurboSquid and duplicated/transformed using Blender. The resulting scene contains 42,292 triangles.
+		</p>
+		<h4>Environment Mapping</h4>
+		<p>
+			The environment map we used is from "HDRi Pack 1" by DeviantArt user zbyg, and is available for free <a href="http://zbyg.deviantart.com/art/HDRi-Pack-1-97402522">here</a>. Importing and storing the image was done using <a href="http://freeimage.sourceforge.net/">FreeImage</a>, an open source library.
+		</p>
+	<h3>Group Members</h3>
+	<p>
+		We made an effort to work together as much as possible. Tasks often built off each other, so it was difficult to completely seperate responsibilities. Attempting to do so earlier in the quarter resulted in duplicate code or one person unable to work because they had to wait for another part to be done. The code can also be difficult to debug, and we found having two sets of eyes on the code helped catch mistakes more quickly.
+	</p>
+	<dl>
+		<dt><b>Evan Carey</b></dt>
+		<dd>Photon map creation and tracing</dd>
+		<dd>Glass reflection and refraction</dd>
+		<dd>Depth-of-Field</dd>
+		<dd>Environment mapping</dd>
+		<dd>Model editing</dd>
+		&nbsp;
+		<dt><b>Robin Clark</b></dt>
+		<dd>Lighting</dd>
+		<dd>Fresnel and Phong shading</dd>
+		<dd>Photon and caustic mapping</dd>
+
+	</dl>
+
+	<h3>Additional Scenes</h3>
+		<h4>Cornell Box</h4>
+		<p>
+			For our class presentation, we implemented photon mapping, caustics, and Fresnel reflection to produce the following image. We used this scene primarily for testing, as it shows most of our effects and and renders quickly. It uses 200,000 global photons and 50,000 caustic photon emitted from a sphere light onto a mirror ball and a glass ball.
+		</p>
+		<img src="img/box_sphere_light_1024_solid_glass.png" width="512px"/>
+		<h4 id="glass_ball">Glass Ball</h4>
+		<p>
+			This scene shows a glass ball on a diffuse surface. It utilizes photon mapping and caustics, but was used to test our environment mapping, which can be seen in the reflection on the ball. Additionally, it uses depth-of-field to focus on the ball and blur out the map and edge of the diffuse surface in the background, as well as a spot light to create soft shadows.
+		</p>
+		<img src="img/glass_ball.png" />
+	</body>
+</html>
+

@@ -134,7 +134,7 @@ void makeFinalScene2() {
 	g_scene = new Scene;
 	g_image = new Image;
 
-	g_image->resize(1600, 900);
+	g_image->resize(700, 400);
 
 	// set up the camera
 	g_camera->setBGColor(Vector3(0.0f, 0.0f, 0.2f));
@@ -145,9 +145,7 @@ void makeFinalScene2() {
 
 	// create and place a point light source
 	SpotLight * light = new SpotLight(Vector3(-1, -1, -1), 0.2f, PI / 12.0f, PI / 6.0f);
-	//PointLight* light = new PointLight;
 	light->setPosition(Vector3(6, 28, 5));
-	//light->setRadius(0.2f);
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(500);
 	g_scene->addLight(light);
@@ -161,19 +159,19 @@ void makeFinalScene2() {
 	TriangleMesh * mesh = new TriangleMesh;
 	Matrix4x4 xform;
 	xform.setIdentity();
-	xform *= translate(0.0f, (48.344666 + 27.825138) * 0.25, 0.0f);
-	mesh->load("res/models/3_wine_glasses.obj", xform);
+	xform *= translate(0.0f, (48.344666 + 27.8) * 0.25, 0.0f);
+	mesh->load("res/models/3_wineglasses3.obj", xform);
 	addMeshTrianglesToScene(mesh, material);
 
 
 	Material *tablemat = new PhongMaterial(Vector3(0.0f), Vector3(0.0f), Vector3(1.0f), 1.0f, 1.5f);
-	Material *legmat = new PhongMaterial(Vector3(0.64f), Vector3(0.36f), Vector3(0.0f), 1.0f, 1.0f);
+	Material *legmat = new PhongMaterial(Vector3(0.9f), Vector3(0.1f), Vector3(0.0f), 1.0f, 1.0f);
 
 	mesh = new TriangleMesh;
 	xform.setIdentity();
 	xform *= scale(0.25f, 0.25f, 0.25f);
 	xform *= translate(0.0f, 48.344666, 0.0f);
-	mesh->load("res/models/simple_table_2.obj", xform);
+	mesh->load("res/models/simple_table_4.obj", xform);
 	addMeshTrianglesToScene(mesh, legmat);
 
 	// create the floor triangle
@@ -215,14 +213,8 @@ void testEnvMap() {
 	g_camera->setFOV(55);
 
 	// create and place a point light source
-	//PointLight* light = new PointLight;
-	//SphereLight * light = new SphereLight;
 	SpotLight* light = new SpotLight(Vector3(-1, -1, 1), 0.2f, PI / 8.0f, PI / 4.0f);
-	//light->setNormal(Vector3(0, 1, 0));
-	//PointLight* light = new PointLight;
 	light->setPosition(Vector3(2.75, 5.49f, -2.75));
-	//light->setSize(1.0f);
-	//light->setRadius(1.0f);
 	light->setColor(Vector3(1, 1, 1));
 	light->setWattage(140);
 	g_scene->addLight(light);

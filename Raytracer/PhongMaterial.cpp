@@ -54,9 +54,7 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 		}
 		for (int i = 0; i < samples; i++) {
 			Vector3 photonOrigin = pLight->getPhotonOrigin(hit.P);
-			//Vector3 l = pLight->calcLightDir(photonOrigin, hit.P);
 			Vector3 l = photonOrigin - hit.P;
-			//Vector3 l = pLight->position() - hit.P;
 
 			float intensity = 1.0f;
 
@@ -85,31 +83,19 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			}
 #endif
 
-			// the inverse-squared falloff 
-
-			// normalize the light direction
-			//l.normalize();
 
 			// get the diffuse component
 			float nDotL = dot(hit.N, l);
 			falloff = 1.0f / (4.0f * PI * falloff);
 
+			// Area light falloff
 			SpotLight* spot = dynamic_cast<SpotLight*>(pLight);
 			if (spot) {
 				nDotL = dot(-l, spot->normal());
 				if (nDotL < cos(spot->phi())) {
 					continue;
-					//intensity = 0.0f;
-				/*} else if (nDotL > cos(spot->theta())) {
-					intensity = 1.0f;*/
 				} else {
 					intensity = pow(nDotL, 1.5);
-					//float alpha = dot(spot->normal(), hit.P - spot->position());
-					//if (alpha > 0.0f) {
-					//float p = 1.0f; // falloff rate
-					//intensity = pow((alpha - cos(spot->phi() / 2.0f)) / (cos(spot->theta() / 2.0f) - cos(spot->phi() / 2.0f)), p);
-					//intensity = intensity < 0.0f ? 0.0f : intensity > 1.0f ? 1.0f : intensity;
-					//}
 				}
 			}
 
@@ -134,8 +120,6 @@ Vector3 PhongMaterial::shade(const Ray& ray, const HitInfo& hit, const Scene& sc
 			}
 		}
 	}
-
-
 
 	return L;
 }
